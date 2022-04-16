@@ -1,12 +1,11 @@
 const app = require('./server.js');
 const dotenv = require('dotenv');
-const mongodb = require('mongodb');
+const mongoose = require('mongoose');
 dotenv.config();
-MongoClient = mongodb.MongoClient;
 
 const port = process.env.PORT || 6000;
 
-MongoClient.connect(
+mongoose.connect(
   process.env.MONGO_URI, {
     maxPoolSize: 50,
     wtimeoutMS: 2500,
@@ -22,5 +21,6 @@ MongoClient.connect(
   app.listen(port, () => {
     console.log(`App has been started on port ${port}...`)
   });
+  
 })
 
