@@ -35,6 +35,7 @@ export default function LoansPage() {
         loginPhoneName = "login",
         data,
     ) => {
+        updateUser("loans/all", "loans");
         console.log(allOrFriends, searchValue, loginPhoneName);
         if (searchValue === "") {
             return;
@@ -43,18 +44,15 @@ export default function LoansPage() {
 
     const updateUser = async function (url, data) {
         let dbPromise = await got.getResource(url);
-        console.log(dbPromise);
         let table = await renderTable(dbPromise[data]);
-
         setTable(table);
-        // dispatch({ type: "UPDATE_USER", payload: table });
     };
 
     const renderTable = (data) => {
         if (!data) return;
         return data.map((row) => (
             <TableRow
-                key={row.id}
+                key={row._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
                 <TableCell component="th" scope="row">
@@ -112,9 +110,9 @@ export default function LoansPage() {
         );
     }, [allOrMy, searchValue, loginHowDateReason]);
 
-    useEffect(() => {
-        updateUser("loans/all", "loans");
-    }, []);
+    // useEffect(() => {
+    //     updateUser("loans/all", "loans");
+    // }, []);
 
     return (
         <>

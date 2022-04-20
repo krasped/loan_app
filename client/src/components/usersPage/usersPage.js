@@ -15,44 +15,77 @@ import {
     Table,
     Paper,
     TableCell,
-    TableBody
+    TableBody,
+    IconButton,
 } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import PersonRemoveAlt1Icon from "@mui/icons-material/PersonRemoveAlt1";
 import GotService from "../server";
 import Spiner from "../spiner";
 
 export default function UsersPage() {
     const got = new GotService();
+
     const [table, setTable] = useState(null);
     const [loansTable, setLoansTable] = useState(null);
+
+    const [usersData, setUsersData] = useState([]);
+    const [loansByUserData, setLoansByUserData] = useState([]);
+
+    const [selectedLogin, setSelectedLogin] = useState("");
+    const [friends, setFriends] = useState([]);
+
     const [allOrFriends, setAllOrFriends] = useState(true); //true equel allUsers
-    const [searchValue, setSearchValue] = useState('');
-    const [loginPhoneName, setLoginPhoneName] = useState('login');// login name phone
-    const [curentDateForTable, setCurentDateForTable] = useState('null');
-    // const dispatch = useDispatch();
-    // const userTable = useSelector((state) => state.user.user);
+    const [searchValue, setSearchValue] = useState("");
+    const [loginPhoneName, setLoginPhoneName] = useState("login"); // login name phone
 
-    const searchData = (allOrFriends, searchValue = '', loginPhoneName = 'login', data) => {
+    const curentUserId = localStorage.getItem("userId");
+
+    const isContact = (id) => {
+        let isOk = false;
+        friends.forEach((element) => {
+            if (element._id === id) {
+                isOk = true;
+            }
+        });
+        return isOk;
+    };
+
+    const searchData = (
+        allOrFriends,
+        searchValue = "",
+        loginPhoneName = "login",
+        data,
+    ) => {
         console.log(allOrFriends, searchValue, loginPhoneName);
-        if(searchValue === ''){
-            return
+        if (searchValue === "") {
+            return;
         }
-    }
+    };
 
-    const updateUser = async function (url, data) {
-        let dbPromise = await got.getResource(url);
-        console.log(dbPromise);
-        
-
-        if(data === 'loans'){
-            let table = await renderLoansTable(dbPromise[data]);
-            setLoansTable(table)
-        }else{
-            let table = await renderTable(dbPromise[data]);
-            setTable(table);
+    const updateDataFromDb = async function (url, res, obj) {
+        let dbPromise;
+        console.log(url, obj);
+        if (!obj) {
+            dbPromise = await got.getResource(url);
+        } else {
+            dbPromise = await got.postResource(url, obj);
         }
-        
-        // dispatch({ type: "UPDATE_USER", payload: table });
+        switch (res) {
+            case "loans":
+                setLoansByUserData(dbPromise[res]);
+                break;
+            case "contacts":
+                setFriends(dbPromise["users"][res]);
+                break;
+            case "users":
+                setUsersData(dbPromise[res]);
+                break;
+            default:
+                console.log("что то пошло не так");
+        }
     };
 
     const renderTable = (data) => {
@@ -62,11 +95,38 @@ export default function UsersPage() {
                 key={row._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-                <TableCell component="th" scope="row">
+                <TableCell>
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => handleChangeSelectedLogin(row.login)}
+                    >
+                        {selectedLogin === row.login ? (
+                            <KeyboardArrowUpIcon />
+                        ) : (
+                            <KeyboardArrowDownIcon />
+                        )}
+                    </IconButton>
+                </TableCell>
+
+                <TableCell component="th" scope="row" align="center">
                     {row.login}
                 </TableCell>
                 <TableCell align="center">{row.firstName}</TableCell>
-                <TableCell align="right">{row.phone}</TableCell>
+                <TableCell align="center">{row.phone}</TableCell>
+                <TableCell align="right">
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => handleAddOrRemoveContact(row._id)}
+                    >
+                        {isContact(row._id) ? (
+                            <PersonRemoveAlt1Icon />
+                        ) : (
+                            <PersonAddAlt1Icon />
+                        )}
+                    </IconButton>
+                </TableCell>
             </TableRow>
         ));
     };
@@ -75,7 +135,7 @@ export default function UsersPage() {
         if (!data) return;
         return data.map((row) => (
             <TableRow
-                key={row.id}
+                key={row._id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
                 <TableCell component="th" scope="row">
@@ -88,23 +148,50 @@ export default function UsersPage() {
         ));
     };
 
-    useEffect(() => {
-        searchData(allOrFriends, searchValue, loginPhoneName, curentDateForTable);
-    }, [allOrFriends, searchValue, loginPhoneName]);
-
-    useEffect(() => {
-        updateUser("users/all", "users");
-        updateUser("loans/all", "loans");
-        updateUser("loans/user", "loans");
-    }, []);
-
     const handleChangeLoginPhoneName = (e) => {
         setLoginPhoneName(e.target.value);
     };
+
+    const handleAddOrRemoveContact = async (_id) => {
+        let url = isContact(_id) ? "users/removeContact" : "users/addContact";
+        console.log(_id);
+        let result = await got.postResource(url, {
+            _id: curentUserId,
+            contactId: _id,
+        });
+        console.log(result);
+        updateDataFromDb("users/contacts", "contacts", { _id: curentUserId });
+    };
+
+    const handleChangeSelectedLogin = (login) => {
+        setSelectedLogin(login);
+    };
     const handleCangeSearchValue = (e) => {
         setSearchValue(e.target.value);
-    }
-    // const loansTable = null;
+    };
+
+    useEffect(() => {
+        searchData(allOrFriends, searchValue, loginPhoneName, usersData);
+    }, [allOrFriends, searchValue, loginPhoneName]);
+
+    useEffect(() => {
+        allOrFriends
+            ? updateDataFromDb("users/all", "users")
+            : updateDataFromDb("users/contacts", "contacts", {
+                  _id: curentUserId,
+              });
+        // updateUser("loans/all", "loans");
+    }, [allOrFriends]);
+
+    useEffect(() => {
+        setLoansTable(renderLoansTable(loansByUserData));
+        setTable(allOrFriends ? renderTable(usersData) : renderTable(friends));
+    }, [loansByUserData, usersData, friends]);
+
+    useEffect(() => {
+        updateDataFromDb("users/loans", "loans", { login: selectedLogin }); //строчка для плоучения нужного займа
+    }, [selectedLogin]);
+
     return (
         <>
             {!table ? <Spiner /> : null}
@@ -114,12 +201,16 @@ export default function UsersPage() {
                     variant="outlined"
                     aria-label="outlined button group"
                 >
-                    <Button onClick={() => setAllOrFriends(false)}>My contacts</Button>
-                    <Button onClick={() => setAllOrFriends(true)}>All users</Button>
+                    <Button onClick={() => setAllOrFriends(false)}>
+                        My contacts
+                    </Button>
+                    <Button onClick={() => setAllOrFriends(true)}>
+                        All users
+                    </Button>
                 </ButtonGroup>
                 <Box>
                     <TextField
-                        value = {searchValue}
+                        value={searchValue}
                         onChange={handleCangeSearchValue}
                         label="search..."
                         className="search"
@@ -150,9 +241,11 @@ export default function UsersPage() {
                     <Table sx={{ minWidth: 500 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Login</TableCell>
+                                <TableCell align="left"></TableCell>
+                                <TableCell align="center">Login</TableCell>
                                 <TableCell align="center">Firstname</TableCell>
-                                <TableCell align="right">Phone</TableCell>
+                                <TableCell align="center">Phone</TableCell>
+                                <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>{table}</TableBody>
@@ -160,19 +253,19 @@ export default function UsersPage() {
                 </TableContainer>
 
                 <TableContainer component={Paper}>
-                    Loans of selected user
+                    Loans of user: {selectedLogin}
                     <Table sx={{ minWidth: 200 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
                                 <TableCell>login</TableCell>
                                 <TableCell align="center">how mach</TableCell>
                                 <TableCell align="center">
-                                    date of creation{" "}
+                                    date of creation
                                 </TableCell>
                                 <TableCell align="right">reason</TableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody>{loansTable}</TableBody>
+                        <TableBody>{loansTable ? loansTable : null}</TableBody>
                     </Table>
                 </TableContainer>
             </Stack>

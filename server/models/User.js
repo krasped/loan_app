@@ -8,12 +8,7 @@ const schema = new Schema({
     contacts:[{
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User"
-    }],
-    loans: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Loan"
     }]
-    
 },
 //to fixed error
 {writeConcern: {
