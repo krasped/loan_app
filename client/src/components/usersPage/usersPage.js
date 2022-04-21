@@ -53,16 +53,41 @@ export default function UsersPage() {
         return isOk;
     };
 
-    const searchData = (
-        allOrFriends,
+    const searchData = ( //midlware for drow table
         searchValue = "",
         loginPhoneName = "login",
         data,
     ) => {
-        console.log(allOrFriends, searchValue, loginPhoneName);
+        console.log(allOrFriends, searchValue, loginPhoneName, data);
         if (searchValue === "") {
-            return;
+            return data;
+        }else {
+            let result ;
+            switch(loginPhoneName){
+                case 'login':
+                    result = data.filter((item) => {
+                        let finalData = item['login'].toLowerCase();
+                        return finalData.indexOf(searchValue.toLowerCase()) !== -1 
+                    })
+                    break;
+                case 'phone':
+                    result = data.filter((item) => {
+                        let finalData = item['phone'] + '';
+                        return finalData.indexOf(searchValue +'') !== -1; 
+                    })
+                    break;
+                case 'firstName':
+                    result = data.filter((item) => {
+                        let finalData = item['firstName'].toLowerCase();
+                        return finalData.indexOf(searchValue.toLowerCase()) !== -1 
+                    })
+                    break;
+                default: return data;
+            }
+            return result;
         }
+
+        
     };
 
     const updateDataFromDb = async function (url, res, obj) {
@@ -170,9 +195,9 @@ export default function UsersPage() {
         setSearchValue(e.target.value);
     };
 
-    useEffect(() => {
-        searchData(allOrFriends, searchValue, loginPhoneName, usersData);
-    }, [allOrFriends, searchValue, loginPhoneName]);
+    // useEffect(() => {
+    //     searchData(allOrFriends, searchValue, loginPhoneName, usersData);
+    // }, [allOrFriends, searchValue, loginPhoneName]);
 
     useEffect(() => {
         allOrFriends
@@ -181,11 +206,11 @@ export default function UsersPage() {
                   _id: curentUserId,
               });
         // updateUser("loans/all", "loans");
-    }, [allOrFriends]);
+    }, [allOrFriends, searchValue, loginPhoneName]);
 
     useEffect(() => {
         setLoansTable(renderLoansTable(loansByUserData));
-        setTable(allOrFriends ? renderTable(usersData) : renderTable(friends));
+        setTable(allOrFriends ? renderTable(searchData(searchValue, loginPhoneName, usersData)) : renderTable(searchData(searchValue,loginPhoneName, friends)));
     }, [loansByUserData, usersData, friends]);
 
     useEffect(() => {
