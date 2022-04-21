@@ -29,16 +29,57 @@ export default function LoansPage() {
     const [searchValue, setSearchValue] = useState("");
     const [loginHowDateReason, setLoginHowDateReason] = useState("login"); // login how date reason
 
+    const [allLoansData, setAllLoansData] = useState([]);
+    const [myLoansData, setMyLoansData] = useState([]);
+
+    const curentUserId = localStorage.getItem("userId");
+
+
     const searchData = (
-        allOrFriends,
+        //midlware for drow table
         searchValue = "",
-        loginPhoneName = "login",
+        loginHowDateReason = "login",
         data,
     ) => {
-        updateUser("loans/all", "loans");
-        console.log(allOrFriends, searchValue, loginPhoneName);
         if (searchValue === "") {
-            return;
+            return data;
+        } else {
+            let result;
+            switch (loginHowDateReason) {
+                case "login":
+                    result = data.filter((item) => {
+                        let finalData = item["login"].toLowerCase();
+                        return (
+                            finalData.indexOf(searchValue.toLowerCase()) !== -1
+                        );
+                    });
+                    break;
+                case "howMach":
+                    result = data.filter((item) => {
+                        let finalData = item["howMach"] + "";
+                        return finalData.indexOf(searchValue + "") !== -1;
+                    });
+                    break;
+                case "date":
+                    result = data.filter((item) => {
+                        let finalData = item["date"].toLowerCase();
+                        return (
+                            finalData.indexOf(searchValue.toLowerCase()) !== -1
+                        );
+                    });
+                    break;
+                case "reason":
+                    result = data.filter((item) => {
+                        let finalData = item["reason"].toLowerCase();
+                        return (
+                            finalData.indexOf(searchValue.toLowerCase()) !== -1
+                        );
+                    });
+                    break;
+                default:
+                    return data;
+            }
+            return result;
         }
     };
 
@@ -46,6 +87,25 @@ export default function LoansPage() {
         let dbPromise = await got.getResource(url);
         let table = await renderTable(dbPromise[data]);
         setTable(table);
+    };
+
+    const updateDataFromDb = async function (url, res, obj) {
+        let dbPromise;
+        if (!obj) {
+            dbPromise = await got.getResource(url);
+        } else {
+            dbPromise = await got.postResource(url, obj);
+        }
+        switch (res) {
+            case "allLoans":
+                setAllLoansData(dbPromise["loans"]);
+                break;
+            case "myLoans":
+                setMyLoansData(dbPromise["loans"]);
+                break;
+            default:
+                console.log("что то пошло не так");
+        }
     };
 
     const renderTable = (data) => {
@@ -102,14 +162,17 @@ export default function LoansPage() {
     }
 
     useEffect(() => {
-        searchData(
-            allOrMy,
-            searchValue,
-            loginHowDateReason,
-            
-        );
+        allOrMy
+            ? updateDataFromDb("loans/all", "allLoans")
+            : updateDataFromDb("loans/my", "myLoans", {
+                  _id: curentUserId,
+              });
     }, [allOrMy, searchValue, loginHowDateReason]);
 
+
+    useEffect(() => {
+        setTable(allOrMy ? renderTable(searchData(searchValue, loginHowDateReason, allLoansData)) : renderTable(searchData(searchValue, loginHowDateReason, myLoansData)));
+    }, [allLoansData, myLoansData]);
     // useEffect(() => {
     //     updateUser("loans/all", "loans");
     // }, []);
@@ -148,7 +211,7 @@ export default function LoansPage() {
                             onChange={handleChangeLoginHowDateReason}
                         >
                             <MenuItem value={"login"}>user</MenuItem>
-                            <MenuItem value={"how"}>how much</MenuItem>
+                            <MenuItem value={"howMach"}>how much</MenuItem>
                             <MenuItem value={"date"}>days ago</MenuItem>
                             <MenuItem value={"reason"}>reason</MenuItem>
                         </Select>

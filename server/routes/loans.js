@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const router = Router();
 const Loan = require("../models/Loan");
+const User = require("../models/User");
 
 // /api/loans
 router.get("/all", async (req, res) => {
@@ -16,10 +17,11 @@ router.get("/all", async (req, res) => {
 });
 
 
-router.get("/my", async (req, res) => {
+router.post("/my", async (req, res) => {
     try {
-        const {login} = req.body;
-        const loan = await Loan.find({login});
+        const {_id} = req.body;
+        const user = await User.findById({_id});
+        const loan = await Loan.find({'login': user.login})
         res.json({ loans: loan });
     } catch (e) {
         res.status(500).json({
