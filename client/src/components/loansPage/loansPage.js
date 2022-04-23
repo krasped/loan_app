@@ -28,11 +28,27 @@ export default function LoansPage() {
     const [allOrMy, setAllOrMy] = useState(true); //true equel allLoans
     const [searchValue, setSearchValue] = useState("");
     const [loginHowDateReason, setLoginHowDateReason] = useState("login"); // login how date reason
+    const [sortBy, setSortBy] = useState('standart')
 
     const [allLoansData, setAllLoansData] = useState([]);
     const [myLoansData, setMyLoansData] = useState([]);
 
     const curentUserId = localStorage.getItem("userId");
+
+    const sortByKey = (arr, key = 'login') => {
+        let newArr = arr;
+        newArr.sort((a,b) => a[key] > b[key] ? 1 : -1);
+        return newArr;
+    }
+
+    const transformDateToDaysAgo = (data) => {
+        let newData = data.map((item) => {
+            item.date = Math.floor((Date.now() - Date.parse(item.date))/1000/60/60/24) + ' days ago';
+            return item;
+        })
+        return newData;
+        // date.toISOString().split('T')[0]//data in format yyyy-mm-dd
+    }
 
 
     const searchData = (
@@ -40,14 +56,17 @@ export default function LoansPage() {
         searchValue = "",
         loginHowDateReason = "login",
         data,
+        sortBy
     ) => {
+        let newData = data;
+        if(sortBy === 'login') newData = sortByKey(newData);
         if (searchValue === "") {
-            return data;
+            return newData;
         } else {
             let result;
             switch (loginHowDateReason) {
-                case "login":
-                    result = data.filter((item) => {
+                case ("login"):
+                    result = newData.filter((item) => {
                         let finalData = item["login"].toLowerCase();
                         return (
                             finalData.indexOf(searchValue.toLowerCase()) !== -1
@@ -55,13 +74,13 @@ export default function LoansPage() {
                     });
                     break;
                 case "howMach":
-                    result = data.filter((item) => {
+                    result = newData.filter((item) => {
                         let finalData = item["howMach"] + "";
                         return finalData.indexOf(searchValue + "") !== -1;
                     });
                     break;
                 case "date":
-                    result = data.filter((item) => {
+                    result = newData.filter((item) => {
                         let finalData = item["date"].toLowerCase();
                         return (
                             finalData.indexOf(searchValue.toLowerCase()) !== -1
@@ -69,7 +88,7 @@ export default function LoansPage() {
                     });
                     break;
                 case "reason":
-                    result = data.filter((item) => {
+                    result = newData.filter((item) => {
                         let finalData = item["reason"].toLowerCase();
                         return (
                             finalData.indexOf(searchValue.toLowerCase()) !== -1
@@ -77,16 +96,10 @@ export default function LoansPage() {
                     });
                     break;
                 default:
-                    return data;
+                    return newData;
             }
             return result;
         }
-    };
-
-    const updateUser = async function (url, data) {
-        let dbPromise = await got.getResource(url);
-        let table = await renderTable(dbPromise[data]);
-        setTable(table);
     };
 
     const updateDataFromDb = async function (url, res, obj) {
@@ -98,10 +111,10 @@ export default function LoansPage() {
         }
         switch (res) {
             case "allLoans":
-                setAllLoansData(dbPromise["loans"]);
+                setAllLoansData(transformDateToDaysAgo(dbPromise["loans"]));
                 break;
             case "myLoans":
-                setMyLoansData(dbPromise["loans"]);
+                setMyLoansData(transformDateToDaysAgo(dbPromise["loans"]));
                 break;
             default:
                 console.log("что то пошло не так");
@@ -124,41 +137,15 @@ export default function LoansPage() {
             </TableRow>
         ));
     };
-    // const dispatch = useDispatch();
-    // const userTable = useSelector((state) => state.user.user);
-
-    // const updateUser = async function () {
-    //     let dbPromise = await got.getResource("user");
-    //     let table = await renderTable(dbPromise);
-    //     dispatch({ type: "UPDATE_USER", payload: table });
-    // };
-
-    // const renderTable = (data) => {
-    //     if (!data) return ;
-    //     return data.map((row) => (
-    //         <TableRow
-    //             key={row.id}
-    //             sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-    //         >
-    //             <TableCell component="th" scope="row">
-    //                 {row.id}
-    //             </TableCell>
-    //             <TableCell align="center">{row.firstName}</TableCell>
-    //             <TableCell align="right">{row.lastName}</TableCell>
-    //             <TableCell align="right">{row.email}</TableCell>
-    //         </TableRow>
-    //     ));
-    // };
-
-    // useEffect(() => {
-    //     updateUser();
-    // }, []);
 
     const handleChangeLoginHowDateReason = (e) => {
         setLoginHowDateReason(e.target.value);
     };
     const handleCangeSearchValue = (e) => {
         setSearchValue(e.target.value);
+    }
+    const handleChangeSortBy = (e) => {
+        setSortBy(e.target.value);
     }
 
     useEffect(() => {
@@ -167,11 +154,11 @@ export default function LoansPage() {
             : updateDataFromDb("loans/my", "myLoans", {
                   _id: curentUserId,
               });
-    }, [allOrMy, searchValue, loginHowDateReason]);
+    }, [allOrMy, searchValue, loginHowDateReason, sortBy]);
 
 
     useEffect(() => {
-        setTable(allOrMy ? renderTable(searchData(searchValue, loginHowDateReason, allLoansData)) : renderTable(searchData(searchValue, loginHowDateReason, myLoansData)));
+        setTable(allOrMy ? renderTable(searchData(searchValue, loginHowDateReason, allLoansData, sortBy)) : renderTable(searchData(searchValue, loginHowDateReason, myLoansData, sortBy)));
     }, [allLoansData, myLoansData]);
     // useEffect(() => {
     //     updateUser("loans/all", "loans");
@@ -207,13 +194,31 @@ export default function LoansPage() {
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={loginHowDateReason}
-                            label="search..."
+                            label="LookFor"
                             onChange={handleChangeLoginHowDateReason}
                         >
-                            <MenuItem value={"login"}>user</MenuItem>
+                            <MenuItem value={"login"}>login</MenuItem>
+                            <MenuItem value={"sortLogin"}>sortLogin</MenuItem>
                             <MenuItem value={"howMach"}>how much</MenuItem>
                             <MenuItem value={"date"}>days ago</MenuItem>
                             <MenuItem value={"reason"}>reason</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
+                <Box sx={{ minWidth: 120 }}>
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel id="demo-simple-select-label">
+                            sort by
+                        </InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-seStandart"
+                            value={sortBy}
+                            label="sort by"
+                            onChange={handleChangeSortBy}
+                        >
+                            <MenuItem value={"standart"}>Standart</MenuItem>
+                            <MenuItem value={"login"}>Login</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
