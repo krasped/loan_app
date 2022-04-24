@@ -1,18 +1,24 @@
 const express = require("express");
 const cors = require("cors");
+const passport = require('passport');
+// const cookieParser = require("cookie-parser");
+const app = express();
+var bearer = require('./strategies/bearer.js')
+
+
 const auth = require('./routes/auth');
 const users = require('./routes/users');
 const loans = require('./routes/loans');
 const add_loan = require('./routes/add_loan');
-const app = express();
-
 app.use(cors());
 app.use(express.json());
+// app.use(cookieParser());
+app.use(passport.initialize());
 
 app.use('/auth',auth);
-app.use('/users',users);
-app.use('/loans',loans);
-app.use('/add_loan',add_loan);
+app.use('/users',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),users);
+app.use('/loans',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),loans);
+app.use('/add_loan',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),add_loan);
 app.use('*', (req, res) => res.status(404).json({error:"not found"}));
 
 // app.use("/", mainRouter);

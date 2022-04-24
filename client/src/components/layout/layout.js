@@ -1,12 +1,27 @@
 import { Link, Outlet } from "react-router-dom";
 import {Stack, Button, CssBaseline, AppBar, Toolbar, Container , Box } from "@mui/material";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from "react";
 
 export default function Layout() {
-
-    const isLoggedIn = true;
-    // useSelector((state) => state.autorization.isLoggedIn);
+    const dispatch = useDispatch();
+    // const isLoggedIn = true;
+    const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
     const email = useSelector((state) => state.autorization.userEmail);
+
+    const addLoginDataToStore = () => {
+        dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
+        dispatch({ type: "USER_ID", payload: localStorage.getItem('userId') });
+        dispatch({ type: "USER_TOKEN", payload: localStorage.getItem('token') });
+    }
+
+    const logOut = () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('isLogged');
+            localStorage.removeItem('userId');
+            addLoginDataToStore();
+    }
+    console.log("render layout")
 
     function renderButtons(isLoggedIn){
         if(isLoggedIn){
@@ -28,6 +43,7 @@ export default function Layout() {
         } else return null;
     }
 
+    useEffect(() => {addLoginDataToStore()},[]);
     return (
         <>
             <CssBaseline />
@@ -47,9 +63,13 @@ export default function Layout() {
                             <Button variant="contained">
                                 <Link to="login" style={{ textDecoration: 'none', color: "white" }}>Login</Link>
                             </Button>
-                            <Button variant="contained">
-                                Log out
-                            </Button>
+                            {isLoggedIn?
+                                <Button variant="contained" onClick={logOut}>
+                                    Log out
+                                </Button>:
+                                null
+                                }
+                            
                         </Box>
                     </Stack>
                     </Box>

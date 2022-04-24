@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {Navigate, Routes, Route} from "react-router-dom";
+import {Navigate, Routes, Route, useLocation} from "react-router-dom";
 import Layout from "../layout";
 import UsersPage from "../usersPage";
 import PublicPage from "../publicPage";
@@ -36,15 +36,49 @@ function App() {
 
     //     )
     // }
+    const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
+
+    function RequireAuth({ children }) {
+        let location = useLocation();
+        if (!isLoggedIn) {
+          return <Navigate to="/login" state={{ from: location }} replace />;
+        } else {
+          return children;
+        }
+      }
+
     return (
         <>
             <Routes>
                 <Route element={<Layout />}>
+                    <Route path="/users" element={
+                        <RequireAuth>
+                            <UsersPage />
+                        </RequireAuth>
+                        
+                    }/>
+                    <Route path="/loans" element={
+                        <RequireAuth>
+                            <LoansPage />
+                        </RequireAuth>
+                        
+                    } />
+                    <Route path="/add_loan" element={
+                        <RequireAuth>
+                            <AddLoanPage />
+                        </RequireAuth>
+                        
+                    } />
+                    <Route path="*" element={
+                        <RequireAuth>
+                            <PublicPage />
+                        </RequireAuth>
+                        
+                    } />
+                    
+                   
                     <Route path="/login" element={<LoginPage />} />
-                    <Route path="/users" element={<UsersPage />} />
-                    <Route path="/loans" element={<LoansPage />} />
-                    <Route path="/add_loan" element={<AddLoanPage />} />
-                    <Route path="*" element={<PublicPage />} />  
+                      
                 </Route>
             </Routes>
         </>

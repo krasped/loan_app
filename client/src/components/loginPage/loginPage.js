@@ -14,6 +14,7 @@ import {
 import GotService from "../server";
 
 const LoginPage = () => {
+    const dispatch = useDispatch();
     const got = new GotService();
     const [open, setOpen] = useState(false);
     const [login, setLogin] = useState("");
@@ -68,6 +69,12 @@ const LoginPage = () => {
         setPassword(event.target.value);
     };
 
+    const addLoginDataToStore = () => {
+        dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
+        dispatch({ type: "USER_ID", payload: localStorage.getItem('userId') });
+        dispatch({ type: "USER_TOKEN", payload: localStorage.getItem('token') });
+    }
+
     const handleLogin = async (login, password) => {
         const getTokenId = await got.postResource(
             "auth/login",
@@ -83,6 +90,8 @@ const LoginPage = () => {
             localStorage.removeItem('isLogged');
             localStorage.removeItem('userId');
         }
+
+        addLoginDataToStore();
         setLogin('');
         setPassword('');
     }
