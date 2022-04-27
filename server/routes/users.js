@@ -14,6 +14,16 @@ router.get("/all", async (req, res) => {
         });
     }
 });
+router.get("/all/login", async (req, res) => {
+    try {
+        const user = await User.find({},{login: 1});
+        res.json({ users: user });
+    } catch (e) {
+        res.status(500).json({
+            message: "что-то пошло не так попробуйте снова",
+        });
+    }
+});
 
 router.post("/contacts", async (req, res) => {
     try {

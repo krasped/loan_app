@@ -1,10 +1,16 @@
-
+import { useDispatch } from 'react-redux';
 function GotService() {
+    const dispatch = useDispatch();
     this._apiBase = "http://localhost:5000/";
 
     const logout = (responce) => {
         if (responce === 'redirect'){
+            localStorage.removeItem('token');
             localStorage.removeItem('isLogged');
+            localStorage.removeItem('userId');
+            dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
+            dispatch({ type: "USER_ID", payload: localStorage.getItem('userId') });
+            dispatch({ type: "USER_TOKEN", payload: localStorage.getItem('token') });
         }
     }
 
@@ -42,6 +48,7 @@ function GotService() {
             console.log(response);
             let json = await response.json();
             console.log("success", JSON.stringify(json));
+            logout(json);
             return json;
         } catch (error) {
             console.error("error: ", error);

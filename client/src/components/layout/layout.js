@@ -60,15 +60,14 @@ export default function Layout() {
                         <Box
                             sx={{ mr: 'auto' }}
                         >
-                            <Button variant="contained">
-                                <Link to="login" style={{ textDecoration: 'none', color: "white" }}>Login</Link>
-                            </Button>
-                            {isLoggedIn?
+                            {!isLoggedIn?
+                                <Button variant="contained">
+                                    <Link to="login" style={{ textDecoration: 'none', color: "white" }}>Login</Link>
+                                </Button>:
                                 <Button variant="contained" onClick={logOut}>
                                     Log out
-                                </Button>:
-                                null
-                                }
+                                </Button>
+                            }
                             
                         </Box>
                     </Stack>

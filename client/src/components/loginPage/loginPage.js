@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from 'react-redux';
+import { Link } from "react-router-dom";
 
 import {
     Button,
@@ -183,7 +184,10 @@ const LoginPage = () => {
                         handleLogin(login, password);
                     }}
                 >
-                    Login
+                    <Link to="/" color="white" style={{ textDecoration: 'none', color: "blue" }}>
+                        Login 
+                    </Link>
+                    {/* добавить функционал для перенаправления при логине и ошибках */}
                 </Button>
             </Container>
         </>

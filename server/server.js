@@ -3,7 +3,7 @@ const cors = require("cors");
 const passport = require('passport');
 // const cookieParser = require("cookie-parser");
 const app = express();
-var bearer = require('./strategies/bearer.js')
+require('./strategies/bearer.js')
 
 
 const auth = require('./routes/auth');

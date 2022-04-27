@@ -51,6 +51,7 @@ function App() {
         <>
             <Routes>
                 <Route element={<Layout />}>
+                    <Route path="/login" element={<LoginPage />} />
                     <Route path="/users" element={
                         <RequireAuth>
                             <UsersPage />
@@ -67,7 +68,9 @@ function App() {
                         <RequireAuth>
                             <AddLoanPage />
                         </RequireAuth>
-                        
+                    } />
+                    <Route path="/" element={
+                        null
                     } />
                     <Route path="*" element={
                         <RequireAuth>
@@ -76,8 +79,8 @@ function App() {
                         
                     } />
                     
-                   
-                    <Route path="/login" element={<LoginPage />} />
+                    
+                    
                       
                 </Route>
             </Routes>

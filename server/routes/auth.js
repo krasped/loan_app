@@ -5,6 +5,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const {body, validationResult} = require('express-validator');
 // /api/auth
+
+router.get('/',
+    function (req, res) {
+        res.json('redirect');
+    }
+)
+
 router.post(
     '/register', 
     [
@@ -69,9 +76,8 @@ router.post(
             }
 
             const token = jwt.sign(
-                { userId: user.id },
-                process.env.JWT_SECRET,
-                {expiresIn: '1h'}//действителен 1 час
+                { userId: user.id, iat: Math.floor(Date.now() / 1000) },
+                process.env.JWT_SECRET
             )
             
             res.json({token, userId: user.id})
