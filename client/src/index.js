@@ -6,12 +6,15 @@ import store from './store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
+import { SnackbarProvider} from 'notistack'; //component to send failer or sucsess message to user
 
 ReactDOM.createRoot(document.getElementById('root')).render(
         <React.StrictMode>
           <Provider store={store}>
             <BrowserRouter>
-              <App />
+              <SnackbarProvider maxSnack={3}>
+                <App />
+              </SnackbarProvider>
             </BrowserRouter>
           </Provider>
         </React.StrictMode>
@@ -21,3 +24,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+

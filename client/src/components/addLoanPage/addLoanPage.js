@@ -1,14 +1,32 @@
+
+/**
+ * @module addLoanPage
+ * 
+ */
+
 import React, { useState, useEffect } from "react";
-import { Stack, TextField, Box, Button,Autocomplete } from "@mui/material";
+import { Stack, TextField, Box, Button,Autocomplete, styled } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import GotService from "../server";
 import Spiner from "../spiner";
+import { useSnackbar } from 'notistack';
 
 export default function LoansPage() {
+    /**
+     * @function enqueueSnackbar 
+     * @param message - write mesagge what do you want
+     * @param options - @example { variant:'success' } or variant: 'warning' ...error warning info
+     * @example enqueueSnackbar('This is a success message!', { 'success' });
+     */
+    const { enqueueSnackbar } = useSnackbar(); //for message to user
+    const Div = styled('div')(({ theme }) => ({
+        ...theme.typography.button,
+        backgroundColor: theme.palette.background.paper,
+        padding: theme.spacing(1),
+      }));
+
     const got = new GotService();
 
-    
-    
     const [event, setEvent] = useState("");
     const [loans, setLoans] = useState([]);
     const [other, setOther] = useState("");
@@ -16,27 +34,13 @@ export default function LoansPage() {
     const [newUser, setNewUser] = useState('');
     const [allUsersArr, setAllUsersArr] = useState([]);
     const [id, setId] = useState(1);
-    // const dispatch = useDispatch();
-    // const userTable = useSelector((state) => state.user.user);
-
-    // const updateUser = async function () {
-    //     let dbPromise = await got.getResource("user");
-    //     let table = await renderTable(dbPromise);
-    //     dispatch({ type: "UPDATE_USER", payload: table });
-    // };
-
-    // const handleChangeLookForParametr = (e) => {
-    //     setLookForParametr(e.target.value);
-    // }
-
+    
     const getAllUsers = async() => {
         const users = await got.getResource('users/all/login');
         setAllUsersArr(users.users);
     }
-
+    
     const handleChangeNewUser = (e) => {
-
-        console.log(e.target.value);
         setNewUser(e.target.value);
     }
 
@@ -50,50 +54,109 @@ export default function LoansPage() {
         console.log(loans);
         setLoans(newLoans);
     };
-
+    
     const handleChangeEvent = (e) => {
         setEvent(e.target.value);
+        console.log(event);
+        
     };
-
+    
     const handleChangeOther = (event) => {
         setOther(event.target.value);
     };
 
     const addOtherUser = () => {
-        setId(id + 1);
-        const user = { id, 'login': newUser  };
-        setLoans([...loans, user]);
-        setNewUser('');
+        if(newUser){
+            setId(id + 1);
+            const user = { id, 'login': newUser  };
+            setLoans([...loans, user]);
+            setNewUser('');
+            if(allUsersArr.map(x => x.login).indexOf(user.login) === -1){
+                enqueueSnackbar('вы создали логин для пользователя, которого пока не существует', { variant: 'warning' });
+            }
+        } else enqueueSnackbar('введите нового пользователя', { variant: 'warning' });
+        
     };
-
+    /**
+     * 
+     * @param {String|Number} rId 
+     */
     const deleteInput = (rId) => {
         let newUsers = loans.filter((item) => item.id !== rId);
         setLoans(newUsers);
     };
 
+    const getAllParanetrsFromPage = () => {
+        return({event, loans, other})
+    }
+    /**
+     * 
+     * @param {String} event 
+     * @param {Array} loans 
+     * @param {string} other 
+     */
+    const  handleClickSendForm = async () => {
+        const {event, loans, other} = getAllParanetrsFromPage();
+        if (loans.length === 0) {
+            enqueueSnackbar('need to add user', { variant: 'warning' });
+        }else{
+            let isOk = true;
 
-    const  handleClickSendForm = async(event, loans, other) => {
+            loans.forEach(x=>{
+                console.log(x.reason);
+                if(x.reason === (undefined)||x.reason === ('')){
+                    isOk = false;
+                    console.log(isOk)
+                }
+            })
+            
+            if(!isOk){
+                enqueueSnackbar('заполните все поля со звездочкой', { variant: 'warning' });
+            }else{
+                console.log(event, loans, other);
+                let sendObj = changeLoansBeforeSending(event, loans, other);
+                console.log(sendObj);
+                handleClearForm();
+            }
+            
+        }
+
+        // let result = await sendComplitedLoansToDB(sendObj);
+        // console.log(result);
+        
+    };
+    /**
+     * 
+     * @param {*} data 
+     * @returns promice promice from db request
+     */
+    const sendComplitedLoansToDB = async(data) => {
         let result = await got.postResource(
             "add_loan/add",
-             changeLoansBeforeSending(event, loans, other)    
+             data    
         );
-        console.log(result);
-        handleClearForm();
-    };
-
-    
+        return result
+    }
+    /**
+     * @function changeLoansBeforeSending - compare array of component to send from parameters
+     * @param {String} event  
+     * @param {Array} loans 
+     * @param {string} other 
+     * @returns {Array} final array
+     */
     const changeLoansBeforeSending = (event, loans, other) => {
         const newLoans = loans.map((item)=> {
             delete item.id;
-            let reason = `Event: ${event}; Details: ${item.reason}; Other: ${other} `;
+            let reason = `${event ? "Event:" + event : ''} Details: ${item.reason}; ${other ? "Other:" + other : ''} `;
             item.reason = reason;
             return item;
         });
-        console.log(newLoans);
         return [...newLoans];
     }
 
     const handleClearForm = () => {
+        setNewUser('');
+        setId(1);
         setLoans([]);
         setEvent('');
         setOther('');
@@ -112,7 +175,7 @@ export default function LoansPage() {
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
                     onChange={(e) => handleChangeUsersArr(row.id, "login", e.target.value)}
-                    label="users"
+                    label="* users"
                     value = {row.login}
                     disabled
                 />
@@ -125,7 +188,7 @@ export default function LoansPage() {
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
                     onChange={(e) => handleChangeUsersArr(row.id, "reason", e.target.value)}
-                    label="details"
+                    label="* details"
                 />
                 <Button variant="outlined" onClick={() => deleteInput(row.id)}>
                     delete
@@ -161,7 +224,7 @@ export default function LoansPage() {
                         freeSolo
                         options={allUsersArr.map((option) => option['login'])}
                         sx={{ width: 300 }}
-                        renderInput={(params) => <TextField {...params} label="Users login" />}
+                        renderInput={(params) => <TextField {...params} label="select user login" />}
                         onBlur={handleChangeNewUser}
                         value={newUser}
                     />
@@ -184,7 +247,7 @@ export default function LoansPage() {
                 <Box>
                     <Button
                         variant="outlined"
-                        onClick={() => handleClickSendForm(event, loans, other)}
+                        onClick={handleClickSendForm}
                     >
                         Add
                     </Button>
@@ -196,6 +259,7 @@ export default function LoansPage() {
                     </Button>
                 </Box>
             </Box>
+            <Div>{"* Поля со звездочкой обязательны к заполнению"}</Div>
         </>
     );
 }

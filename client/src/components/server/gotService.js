@@ -1,3 +1,7 @@
+/**
+ * @module gotService
+ */
+
 import { useDispatch } from 'react-redux';
 function GotService() {
     const dispatch = useDispatch();
