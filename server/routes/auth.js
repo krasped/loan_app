@@ -80,7 +80,7 @@ router.post(
                 process.env.JWT_SECRET
             )
             
-            res.json({token, userId: user.id})
+            res.json({token, userId: user.id, login: user.login})
         } catch (e) {
             res.status(500).json({message: 'что-то пошло не так попробуйте снова'});
         }

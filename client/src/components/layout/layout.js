@@ -19,6 +19,8 @@ export default function Layout() {
             localStorage.removeItem('token');
             localStorage.removeItem('isLogged');
             localStorage.removeItem('userId');
+            localStorage.removeItem('login');
+
             addLoginDataToStore();
     }
     console.log("render layout")

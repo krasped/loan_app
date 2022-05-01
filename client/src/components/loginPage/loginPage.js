@@ -86,10 +86,13 @@ const LoginPage = () => {
             localStorage.setItem('token', getTokenId.token);
             localStorage.setItem('isLogged', true);
             localStorage.setItem('userId', getTokenId.userId);
+            localStorage.setItem('login', getTokenId.login);
         } else {
             localStorage.removeItem('token');
             localStorage.removeItem('isLogged');
             localStorage.removeItem('userId');
+            localStorage.removeItem('login');
+
         }
 
         addLoginDataToStore();
