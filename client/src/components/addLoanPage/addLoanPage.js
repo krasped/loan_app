@@ -155,9 +155,19 @@ export default function LoansPage() {
                                 loans,
                                 other
                             );
-                            enqueueSnackbar("заемы добавлены можете проверить вкладку заемы", {
-                                variant: "success",
-                            });
+                            try{
+                                let result = await sendComplitedLoansToDB(sendObj);
+                                console.log(result);
+                                enqueueSnackbar("заемы добавлены можете проверить вкладку заемы", {
+                                    variant: "success"
+                                });
+                            }catch(e){
+                                enqueueSnackbar(`что то пошло не так сообщение: ${e}`, {
+                                    variant: "error"
+                                });
+                            }
+                            
+                            
                             console.log(sendObj);
                             handleClearForm();
                         }
@@ -166,18 +176,25 @@ export default function LoansPage() {
                     //несоклько пользователей
                     console.log(event, loans, other);
                     let sendObj = changeLoansBeforeSending(event, loans, other);
-                    enqueueSnackbar("заемы добавлены можете проверить вкладку заемы", {
-                        variant: "success",
-                    });
+
+                    try{
+                        let result = await sendComplitedLoansToDB(sendObj);
+                        console.log(result);
+                        enqueueSnackbar("заемы добавлены можете проверить вкладку заемы", {
+                            variant: "success"
+                        });
+                    }catch(e){
+                        enqueueSnackbar(`что то пошло не так сообщение: ${e}`, {
+                            variant: "error"
+                        });
+                    }
+                    
                     console.log(sendObj);
                     handleClearForm();
                 }
             }
         }
         //в каждую добваить
-
-        // let result = await sendComplitedLoansToDB(sendObj);
-        // console.log(result);
     };
     /**
      *
@@ -189,7 +206,6 @@ export default function LoansPage() {
         return result;
     };
 
-
     /**
      * @function changeLoansBeforeSending - compare array of component to send from parameters
      * @param {String} event
@@ -197,75 +213,90 @@ export default function LoansPage() {
      * @param {string} other
      * @returns {Array} final array
      */
-    const changeLoansBeforeSending = (event, loans, other) => {   
-
-        const sumRowOfColulmn = (obj, nameOfColumn) => {
-            return (obj.map((item) => item[nameOfColumn]).reduce((a, b) => a + b))
-        }
-
-        const separateSumForUsers = (loans) => {
-            
-            let newLoans = loans;
-            let bank = sumRowOfColulmn(newLoans, 'howMach');//банк должен быть больше либо равен 0, если меньше то придется у создателя вычитать
-            let separatedLoans = [];
-            newLoans.push({login: localStorage.getItem("login"), howMach: ((bank < 0) ? (- bank) : 0), reason: 'Cоздатель заема. '});//добавление меня по умолчанию ни на что не влияет
-            let arrOfUniqueUsersFromLoans = Array.from(new Set(newLoans.map((item) => item.login)));
-
-            arrOfUniqueUsersFromLoans.forEach((uniq) => { // после этого у нас массив с уникальными логинами separatedLoans
-                let user = {login: uniq}
-                let arrByLogins = newLoans.filter(item => item.login === uniq)//массив объектов с одинаковыми логинами
-                console.log(arrByLogins);
-                user.howMach = sumRowOfColulmn(arrByLogins, 'howMach');
-                user.reason = sumRowOfColulmn(arrByLogins, 'reason');
-                separatedLoans.push(user);
-            })
-            let sumForEachUser = Math.floor(bank/separatedLoans.length);
-            console.log(sumForEachUser);
-            console.log(separatedLoans)
-            separatedLoans = separatedLoans.map((item ) => {
-                item.howMach = item.howMach - sumForEachUser;
-                return item;
-            })
-            let loansMore = separatedLoans.filter((item) => (item.howMach > 0));
-            let loansLess = separatedLoans.filter(item => (item.howMach < 0));
-            let finalLoans = [];
-            //каждый к каждому создание новых заемов
-            loansMore.forEach((moreItem) => {
-                let item = moreItem;
-                item.howMach = Math.floor(moreItem.howMach / loansLess.length);
-                loansLess.forEach(lessItem => {
-                    let newLoan = item ;
-                    newLoan.secondUser = lessItem.login;
-                    finalLoans.push(newLoan);
-                })
-            })
-            loansLess.forEach((lessItem) => {
-                let item = lessItem;
-                item.howMach = Math.floor(lessItem.howMach / loansMore.length);
-                loansMore.forEach(moreItem => {
-                    let newLoan = item ;
-                    newLoan.secondUser = moreItem.login;
-                    finalLoans.push(newLoan);
-                })
-            })
-
-
-            
-            
-            console.log(bank);
-            console.log(finalLoans);
-            return finalLoans;
-        };
-
-        const finalLoans = separateSumForUsers(loans).map((item) => {
-            delete item.id;
+    const changeLoansBeforeSending = (event, loans, other) => {    
+        console.log(separateSumForUsers(loans));
+        const aeparatedArr = separateSumForUsers(loans);
+        let finalLoans = aeparatedArr.map((item) => {
+            let newItem = item
             let reason = `${event ? "Event:" + event : ""} Details: ${
                 item.reason
             }; ${other ? "Other:" + other : ""} `;
-            item.reason = reason;
-            return item;
+            newItem.reason = reason;
+            return newItem;
         });
-        return [...finalLoans];
+        return finalLoans;
+    };
+
+    const sumRowOfColulmn = (arr, nameOfColumn) => {
+        return (arr.map((item) => item[nameOfColumn]).reduce((a, b) => a + b));
+    }
+
+    const separateSumForUsers = (loans) => {    
+        let newLoans = loans.slice();;
+        let bank = sumRowOfColulmn(newLoans, 'howMach');//банк должен быть больше либо равен 0, если меньше то придется у создателя вычитать
+        newLoans.push({login: localStorage.getItem("login"), howMach: ((bank < 0) ? (- bank) : 0), reason: 'Cоздатель заема. '});//добавление меня по умолчанию ни на что не влияет
+        let arrOfUniqueUsersFromLoans = Array.from(new Set(newLoans.map((item) => item.login)));
+        console.log(newLoans, arrOfUniqueUsersFromLoans);
+
+        let separatedLoans = arrOfUniqueUsersFromLoans.map((uniq) => { // после этого у нас массив с уникальными логинами separatedLoans
+            let user = {'login': uniq}
+            let arrByLogins = newLoans.filter(item => (item.login === uniq))//массив объектов с одинаковыми логинами
+            console.log(arrByLogins);
+            user.howMach = sumRowOfColulmn(arrByLogins, 'howMach');
+            user.reason = sumRowOfColulmn(arrByLogins, 'reason');
+            console.log(user);
+            return(user);
+        });
+        console.log(separatedLoans);
+        let sumForEachUser = Math.floor(bank / separatedLoans.length);
+        console.log(sumForEachUser);
+        console.log(separatedLoans);
+
+        let newSeparatedLoans = separatedLoans.map((item) => {
+
+            let newItem = {};
+            Object.assign(newItem, item);
+            console.log(item, item.howMach, sumForEachUser);
+            console.log(item.howMach - sumForEachUser);
+            let total = item.howMach - sumForEachUser;
+            console.log(total);
+            newItem.howMach = total;
+            console.log(newItem);
+            return newItem;
+        })
+        console.log(newSeparatedLoans.filter((item) => (item.howMach > 0)))
+        let loansMore = newSeparatedLoans.filter((item) => (item.howMach > 0));
+        let loansLess = newSeparatedLoans.filter(item => (item.howMach < 0));
+        console.log(loansMore, loansLess);
+        let finalLoans = [];
+        //каждый к каждому создание новых заемов
+        
+        loansMore.forEach((moreItem) => {//изменить подсчен не поровну на всех а учесть индивидуальные траты -
+            let item = {};
+            Object.assign(item, moreItem);
+            loansLess.forEach(lessItem => {
+                item.howMach = Math.floor(-(lessItem.howMach / loansMore.length));
+                let newLoan = {};
+                Object.assign(newLoan, item); 
+                newLoan.secondUser = lessItem.login;
+                console.log(lessItem.login);
+                console.log(newLoan)
+                finalLoans.push(newLoan);
+            })
+        })
+        loansLess.forEach((lessItem) => {//считает отрицательные заемы, положительные просто поменть 2 пользователя местами
+            let item = {}; 
+            Object.assign(item, lessItem);
+            item.howMach = Math.floor(lessItem.howMach / loansMore.length);
+            loansMore.forEach(moreItem => {
+                let newLoan = {};
+                Object.assign(newLoan, item); 
+                newLoan.secondUser = moreItem.login;
+                console.log(newLoan);
+                finalLoans.push(newLoan);
+            })
+        })
+        return finalLoans;
     };
 
     const handleClearForm = () => {
