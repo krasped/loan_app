@@ -33,6 +33,7 @@ export default function LoansPage() {
 
     const [event, setEvent] = useState("");
     const [loans, setLoans] = useState([]);
+    const [ghosts, setGhosts] = useState([]);
     const [other, setOther] = useState("");
     const [table, setTable] = useState(null);
     const [newUser, setNewUser] = useState("");
@@ -47,6 +48,17 @@ export default function LoansPage() {
     const handleChangeNewUser = (e) => {
         setNewUser(e.target.value);
     };
+
+    const returnArrOfGhost = (arr , allUsers ) => {
+        let allUsersArr = allUsers.map(item => item.login);//массив логинов всех пользователей
+        let usersInLoans = Array.from( // массив уникальных логинов в заемах
+            new Set(arr.map((item) => item.login)),
+        ).map((item) => {
+            return { login: item };
+        }) 
+        let newUser = usersInLoans.filter(item => allUsersArr.indexOf(item.login) === -1); // если пользователь в заемах но не в списке пользователе
+        return newUser;
+    }
 
     const handleChangeUsersArr = (id, key, value) => {
         const newLoans = loans.map((item) => {
@@ -146,37 +158,52 @@ export default function LoansPage() {
                             let sendObj = changeLoansBeforeSending(
                                 event,
                                 loans,
-                                other
+                                other,
                             );
-                            try{
-                                let result = await sendComplitedLoansToDB(sendObj);
-                                console.log(result);
-                                enqueueSnackbar("заемы добавлены можете проверить вкладку заемы", {
-                                    variant: "success"
-                                });
-                            }catch(e){
-                                enqueueSnackbar(`что то пошло не так сообщение: ${e}`, {
-                                    variant: "error"
-                                });
+                            try {
+                                let resultSendGhost = await sendGhostUsersToDB(
+                                    returnArrOfGhost(loans, allUsersArr)
+                                );
+                                let result = await sendComplitedLoansToDB(
+                                    sendObj,
+                                );
+                                console.log(result, resultSendGhost);
+                                enqueueSnackbar(
+                                    "заемы добавлены можете проверить вкладку заемы",
+                                    {
+                                        variant: "success",
+                                    },
+                                );
+                            } catch (e) {
+                                enqueueSnackbar(
+                                    `что то пошло не так сообщение: ${e}`,
+                                    {
+                                        variant: "error",
+                                    },
+                                );
                             }
-                            
-                            
+
                             handleClearForm();
                         }
                     }
                 } else {
                     //несоклько пользователей
                     let sendObj = changeLoansBeforeSending(event, loans, other);
-
-                    try{
+                    try {
+                        let resultSendGhost = await sendGhostUsersToDB(
+                            returnArrOfGhost(loans, allUsersArr)
+                        );
                         let result = await sendComplitedLoansToDB(sendObj);
-                        console.log(result);
-                        enqueueSnackbar("заемы добавлены можете проверить вкладку заемы", {
-                            variant: "success"
-                        });
-                    }catch(e){
+                        console.log(result, resultSendGhost);
+                        enqueueSnackbar(
+                            "заемы добавлены можете проверить вкладку заемы",
+                            {
+                                variant: "success",
+                            },
+                        );
+                    } catch (e) {
                         enqueueSnackbar(`что то пошло не так сообщение: ${e}`, {
-                            variant: "error"
+                            variant: "error",
                         });
                     }
                     handleClearForm();
@@ -184,6 +211,10 @@ export default function LoansPage() {
             }
         }
         //в каждую добваить
+    };
+    const sendGhostUsersToDB = async (data) => {
+        let result = await got.postResource("add_loan/addGhostUsers", data);
+        return result;
     };
     /**
      *
@@ -202,10 +233,10 @@ export default function LoansPage() {
      * @param {string} other
      * @returns {Array} final array
      */
-    const changeLoansBeforeSending = (event, loans, other) => {    
+    const changeLoansBeforeSending = (event, loans, other) => {
         const aeparatedArr = separateSumForUsers(loans);
         let finalLoans = aeparatedArr.map((item) => {
-            let newItem = item
+            let newItem = item;
             let reason = `${event ? "Event:" + event : ""} Details: ${
                 item.reason
             }; ${other ? "Other:" + other : ""} `;
@@ -216,59 +247,69 @@ export default function LoansPage() {
     };
 
     const sumRowOfColulmn = (arr, nameOfColumn) => {
-        return (arr.map((item) => item[nameOfColumn]).reduce((a, b) => a + b));
-    }
+        return arr.map((item) => item[nameOfColumn]).reduce((a, b) => a + b);
+    };
 
-    const separateSumForUsers = (loans) => {    
-        let newLoans = loans.slice();;
-        let bank = sumRowOfColulmn(newLoans, 'howMach');//банк должен быть больше либо равен 0, если меньше то придется у создателя вычитать
-        newLoans.push({login: localStorage.getItem("login"), howMach: ((bank < 0) ? (- bank) : 0), reason: 'Cоздатель заема. '});//добавление меня по умолчанию ни на что не влияет
-        let arrOfUniqueUsersFromLoans = Array.from(new Set(newLoans.map((item) => item.login)));
+    const separateSumForUsers = (loans) => {
+        let newLoans = loans.slice();
+        let bank = sumRowOfColulmn(newLoans, "howMach"); //банк должен быть больше либо равен 0, если меньше то придется у создателя вычитать
+        newLoans.push({
+            login: localStorage.getItem("login"),
+            howMach: bank < 0 ? -bank : 0,
+            reason: "Cоздатель заема. ",
+        }); //добавление меня по умолчанию ни на что не влияет
+        let arrOfUniqueUsersFromLoans = Array.from(
+            new Set(newLoans.map((item) => item.login)),
+        );
 
-        let separatedLoans = arrOfUniqueUsersFromLoans.map((uniq) => { // после этого у нас массив с уникальными логинами separatedLoans
-            let user = {'login': uniq}
-            let arrByLogins = newLoans.filter(item => (item.login === uniq))//массив объектов с одинаковыми логинами
-            user.howMach = sumRowOfColulmn(arrByLogins, 'howMach');
-            user.reason = sumRowOfColulmn(arrByLogins, 'reason');
-            return(user);
+        let separatedLoans = arrOfUniqueUsersFromLoans.map((uniq) => {
+            // после этого у нас массив с уникальными логинами separatedLoans
+            let user = { login: uniq };
+            let arrByLogins = newLoans.filter((item) => item.login === uniq); //массив объектов с одинаковыми логинами
+            user.howMach = sumRowOfColulmn(arrByLogins, "howMach");
+            user.reason = sumRowOfColulmn(arrByLogins, "reason");
+            return user;
         });
         let sumForEachUser = Math.floor(bank / separatedLoans.length);
 
         let newSeparatedLoans = separatedLoans.map((item) => {
-
             let newItem = {};
             Object.assign(newItem, item);
-            let total = item.howMach - sumForEachUser;;
+            let total = item.howMach - sumForEachUser;
             newItem.howMach = total;
             return newItem;
-        })
-        let loansMore = newSeparatedLoans.filter((item) => (item.howMach > 0));
-        let loansLess = newSeparatedLoans.filter(item => (item.howMach < 0));
+        });
+        let loansMore = newSeparatedLoans.filter((item) => item.howMach > 0);
+        let loansLess = newSeparatedLoans.filter((item) => item.howMach < 0);
         let finalLoans = [];
         //каждый к каждому создание новых заемов
-        
-        loansMore.forEach((moreItem) => {//изменить подсчен не поровну на всех а учесть индивидуальные траты -
+
+        loansMore.forEach((moreItem) => {
+            //изменить подсчен не поровну на всех а учесть индивидуальные траты -
             let item = {};
             Object.assign(item, moreItem);
-            loansLess.forEach(lessItem => {
-                item.howMach = Math.floor(-(lessItem.howMach / loansMore.length));
+            loansLess.forEach((lessItem) => {
+                item.howMach = Math.floor(
+                    -(lessItem.howMach / loansMore.length),
+                );
                 let newLoan = {};
-                Object.assign(newLoan, item); 
+                Object.assign(newLoan, item);
                 newLoan.secondUser = lessItem.login;
                 finalLoans.push(newLoan);
-            })
-        })
-        loansLess.forEach((lessItem) => {//считает отрицательные заемы, положительные просто поменть 2 пользователя местами
-            let item = {}; 
+            });
+        });
+        loansLess.forEach((lessItem) => {
+            //считает отрицательные заемы, положительные просто поменть 2 пользователя местами
+            let item = {};
             Object.assign(item, lessItem);
             item.howMach = Math.floor(lessItem.howMach / loansMore.length);
-            loansMore.forEach(moreItem => {
+            loansMore.forEach((moreItem) => {
                 let newLoan = {};
-                Object.assign(newLoan, item); 
+                Object.assign(newLoan, item);
                 newLoan.secondUser = moreItem.login;
                 finalLoans.push(newLoan);
-            })
-        })
+            });
+        });
         return finalLoans;
     };
 
@@ -314,7 +355,11 @@ export default function LoansPage() {
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
                     onChange={(e) =>
-                        handleChangeUsersArr(row.id, "reason", e.target.value + ' ')
+                        handleChangeUsersArr(
+                            row.id,
+                            "reason",
+                            e.target.value + " ",
+                        )
                     }
                     label="* details"
                 />
