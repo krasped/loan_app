@@ -12,9 +12,7 @@ import {
     Autocomplete,
     styled,
 } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
 import GotService from "../server";
-import Spiner from "../spiner";
 import { useSnackbar } from "notistack";
 
 export default function LoansPage() {
@@ -57,13 +55,11 @@ export default function LoansPage() {
             }
             return item;
         });
-        console.log(loans);
         setLoans(newLoans);
     };
 
     const handleChangeEvent = (e) => {
         setEvent(e.target.value);
-        console.log(event);
     };
 
     const handleChangeOther = (event) => {
@@ -109,10 +105,8 @@ export default function LoansPage() {
     const isOk = (loans, field) => {
         let ok = true;
         loans.forEach((x) => {
-            console.log(x[field]);
             if (x[field] === undefined || x[field] === "") {
                 ok = false;
-                console.log(ok);
             }
         });
         return ok;
@@ -149,7 +143,6 @@ export default function LoansPage() {
                             );
                         } else {
                             //прошло все проверки, можно считать и отправлять
-                            console.log(event, loans, other);
                             let sendObj = changeLoansBeforeSending(
                                 event,
                                 loans,
@@ -168,13 +161,11 @@ export default function LoansPage() {
                             }
                             
                             
-                            console.log(sendObj);
                             handleClearForm();
                         }
                     }
                 } else {
                     //несоклько пользователей
-                    console.log(event, loans, other);
                     let sendObj = changeLoansBeforeSending(event, loans, other);
 
                     try{
@@ -188,8 +179,6 @@ export default function LoansPage() {
                             variant: "error"
                         });
                     }
-                    
-                    console.log(sendObj);
                     handleClearForm();
                 }
             }
@@ -214,7 +203,6 @@ export default function LoansPage() {
      * @returns {Array} final array
      */
     const changeLoansBeforeSending = (event, loans, other) => {    
-        console.log(separateSumForUsers(loans));
         const aeparatedArr = separateSumForUsers(loans);
         let finalLoans = aeparatedArr.map((item) => {
             let newItem = item
@@ -236,38 +224,26 @@ export default function LoansPage() {
         let bank = sumRowOfColulmn(newLoans, 'howMach');//банк должен быть больше либо равен 0, если меньше то придется у создателя вычитать
         newLoans.push({login: localStorage.getItem("login"), howMach: ((bank < 0) ? (- bank) : 0), reason: 'Cоздатель заема. '});//добавление меня по умолчанию ни на что не влияет
         let arrOfUniqueUsersFromLoans = Array.from(new Set(newLoans.map((item) => item.login)));
-        console.log(newLoans, arrOfUniqueUsersFromLoans);
 
         let separatedLoans = arrOfUniqueUsersFromLoans.map((uniq) => { // после этого у нас массив с уникальными логинами separatedLoans
             let user = {'login': uniq}
             let arrByLogins = newLoans.filter(item => (item.login === uniq))//массив объектов с одинаковыми логинами
-            console.log(arrByLogins);
             user.howMach = sumRowOfColulmn(arrByLogins, 'howMach');
             user.reason = sumRowOfColulmn(arrByLogins, 'reason');
-            console.log(user);
             return(user);
         });
-        console.log(separatedLoans);
         let sumForEachUser = Math.floor(bank / separatedLoans.length);
-        console.log(sumForEachUser);
-        console.log(separatedLoans);
 
         let newSeparatedLoans = separatedLoans.map((item) => {
 
             let newItem = {};
             Object.assign(newItem, item);
-            console.log(item, item.howMach, sumForEachUser);
-            console.log(item.howMach - sumForEachUser);
-            let total = item.howMach - sumForEachUser;
-            console.log(total);
+            let total = item.howMach - sumForEachUser;;
             newItem.howMach = total;
-            console.log(newItem);
             return newItem;
         })
-        console.log(newSeparatedLoans.filter((item) => (item.howMach > 0)))
         let loansMore = newSeparatedLoans.filter((item) => (item.howMach > 0));
         let loansLess = newSeparatedLoans.filter(item => (item.howMach < 0));
-        console.log(loansMore, loansLess);
         let finalLoans = [];
         //каждый к каждому создание новых заемов
         
@@ -279,8 +255,6 @@ export default function LoansPage() {
                 let newLoan = {};
                 Object.assign(newLoan, item); 
                 newLoan.secondUser = lessItem.login;
-                console.log(lessItem.login);
-                console.log(newLoan)
                 finalLoans.push(newLoan);
             })
         })
@@ -292,7 +266,6 @@ export default function LoansPage() {
                 let newLoan = {};
                 Object.assign(newLoan, item); 
                 newLoan.secondUser = moreItem.login;
-                console.log(newLoan);
                 finalLoans.push(newLoan);
             })
         })
