@@ -11,31 +11,7 @@ import LoansPage from "../loansPage";
 
 
 function App() {
-//   const dispatch = useDispatch();
-//     const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
 
-//     function isLogined (children) { 
-//       if(!localStorage.getItem('isLogged')){
-//           return <Navigate to='/login' replace />;
-//       } else return children;
-//   }
-    
-//     useEffect(() => {
-//         dispatch({ 
-//         type: "USER_EMAIL", 
-//         payload: (localStorage.getItem('email'))?localStorage.getItem('email'): false });
-//     });
-//     console.log('hello');
-
-    // const useRouts = (isAuthentificated) => {
-    //     if (isAuthentificated){
-    //         return
-    //     }
-
-    //     return(
-
-    //     )
-    // }
     const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
 
     function RequireAuth({ children }) {

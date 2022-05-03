@@ -1,0 +1,70 @@
+{
+  "addLoanPage": {
+    "createLoginMessage": "вы создали логин для пользователя, которого пока не существует",
+    "newUserMessage": "введите нового пользователя",
+    "needAddUserMessage": "необходимо добавить пользователя",
+    "needAddFields*": "заполните все поля со звездочкой",
+    "oneUserNeedHowMach": "когда введен один пользователь должно быть заполнено пле сколько",
+    "loansAdded": "заемы добавлены можете проверить вкладку заемы",
+    "somethingError": "что то пошло не так сообщение:",
+    "event": "событие",
+    "details": "детали",
+    "other": "другое",
+    "loanCreater": "создатель заема. ",
+    "users": "пользователи",
+    "howMach": "сколько",
+    "delete": "удалить",
+    "selectUserlogin": "выберите логин пользователя",
+    "addNewUser": "добавить нового пользователя",
+    "create": "создать",
+    "clearForm": "очистить форму",
+    "fieldsWith*Should": "* Поля со звездочкой обязательны к заполнению"
+  },
+  "layout": {
+    "contacts": "пользователи",
+    "loans": "заемы",
+    "createLoan": "создать заем",
+    "login": "войти",
+    "logOut": "выйти",
+    "hello": "здравствуй"
+  },
+  "loansPage": {
+    "daysAgo": "дней назад",
+    "somethingGoesWrong": "что то пошло не так",
+    "myLoans": "мои заемы",
+    "allLoans": "все заемы",
+    "search...": "поиск...",
+    "lookFor": "критерий поиска",
+    "login": "логин",
+    "howMach": "сумма",
+    "dateOfCreation": "дата создания",
+    "reason": "причина",
+    "sortBy": "метод сортировки",
+    "without": "без сортировки"
+  },
+  "loginPage": {
+    "login": "логин",
+    "firstName": "имя",
+    "phone": "телефон",
+    "password": "пароль",
+    "cancel": "отменить",
+    "createAccaunt": "создать аккаунт",
+    "registration": "регистрация",
+    "feedInformation": "введите данные"
+  },
+  "usersPage": {
+    "myContacts": "мои контакты",
+    "somethingGoesWrong": "что то пошло не так",
+    "allUsers": "все пользователи",
+    "search...": "поиск...",
+    "lookFor": "критерий поиска",
+    "login": "логин",
+    "firstName": "имя",
+    "phone": "телефон",
+    "howMach": "сумма",
+    "dateOfCreation": "дата создания",
+    "reason": "причина",
+    "loansOfUser": "заемы пользователя"
+  }
+}
+

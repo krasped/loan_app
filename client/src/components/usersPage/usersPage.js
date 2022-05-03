@@ -24,9 +24,12 @@ import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import PersonRemoveAlt1Icon from "@mui/icons-material/PersonRemoveAlt1";
 import GotService from "../server";
 import Spiner from "../spiner";
+import { useTranslation } from 'react-i18next';
+
 
 export default function UsersPage() {
     const got = new GotService();
+    const { t } = useTranslation();
 
     const [table, setTable] = useState(null);
     const [loansTable, setLoansTable] = useState(null);
@@ -109,7 +112,7 @@ export default function UsersPage() {
                 setUsersData(dbPromise[res]);
                 break;
             default:
-                console.log("что то пошло не так");
+                console.log(t("usersPage.somethingGoesWrong"));
         }
     };
 
@@ -227,17 +230,17 @@ export default function UsersPage() {
                     aria-label="outlined button group"
                 >
                     <Button onClick={() => setAllOrFriends(false)}>
-                        My contacts
+                        {t("usersPage.myContacts")}
                     </Button>
                     <Button onClick={() => setAllOrFriends(true)}>
-                        All users
+                        {t("usersPage.allUsers")}
                     </Button>
                 </ButtonGroup>
                 <Box>
                     <TextField
                         value={searchValue}
                         onChange={handleCangeSearchValue}
-                        label="search..."
+                        label={t("usersPage.search...")}
                         className="search"
                         margin="normal"
                     />
@@ -245,18 +248,18 @@ export default function UsersPage() {
                 <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="demo-simple-select-label">
-                            LookFor
+                            {t("usersPage.lookFor")}
                         </InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={loginPhoneName}
-                            label="LookFor"
+                            label={t("usersPage.lookFor")}
                             onChange={handleChangeLoginPhoneName}
                         >
-                            <MenuItem value={"login"}>login</MenuItem>
-                            <MenuItem value={"phone"}>phone</MenuItem>
-                            <MenuItem value={"firstName"}>name</MenuItem>
+                            <MenuItem value={"login"}>{t("usersPage.login")}</MenuItem>
+                            <MenuItem value={"phone"}>{t("usersPage.phone")}</MenuItem>
+                            <MenuItem value={"firstName"}>{t("usersPage.firstName")}</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
@@ -267,9 +270,9 @@ export default function UsersPage() {
                         <TableHead>
                             <TableRow>
                                 <TableCell align="left"></TableCell>
-                                <TableCell align="center">Login</TableCell>
-                                <TableCell align="center">Firstname</TableCell>
-                                <TableCell align="center">Phone</TableCell>
+                                <TableCell align="center">{t("usersPage.login")}</TableCell>
+                                <TableCell align="center">{t("usersPage.firstName")}</TableCell>
+                                <TableCell align="center">{t("usersPage.phone")}</TableCell>
                                 <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>
@@ -278,16 +281,16 @@ export default function UsersPage() {
                 </TableContainer>
 
                 <TableContainer component={Paper}>
-                    Loans of user: {selectedLogin}
+                    {t("usersPage.loansOfUser")}: {selectedLogin}
                     <Table sx={{ minWidth: 200 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>login</TableCell>
-                                <TableCell align="center">how mach</TableCell>
+                                <TableCell>{t("usersPage.login")}</TableCell>
+                                <TableCell align="center">{t("usersPage.howMach")}</TableCell>
                                 <TableCell align="center">
-                                    date of creation
+                                    {t("usersPage.dateOfCreation")}
                                 </TableCell>
-                                <TableCell align="right">reason</TableCell>
+                                <TableCell align="right">{t("usersPage.reason")}</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>{loansTable ? loansTable : null}</TableBody>

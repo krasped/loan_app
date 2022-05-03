@@ -1,8 +1,6 @@
 /**
  * @module addLoanPage
- *
  */
-
 import React, { useState, useEffect } from "react";
 import {
     Stack,
@@ -14,6 +12,7 @@ import {
 } from "@mui/material";
 import GotService from "../server";
 import { useSnackbar } from "notistack";
+import { useTranslation } from 'react-i18next';
 
 export default function LoansPage() {
     /**
@@ -28,12 +27,12 @@ export default function LoansPage() {
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(1),
     }));
-
+    const { t } = useTranslation();
+    // {t('addLoanPage.')}
     const got = new GotService();
 
     const [event, setEvent] = useState("");
     const [loans, setLoans] = useState([]);
-    const [ghosts, setGhosts] = useState([]);
     const [other, setOther] = useState("");
     const [table, setTable] = useState(null);
     const [newUser, setNewUser] = useState("");
@@ -79,6 +78,7 @@ export default function LoansPage() {
     };
 
     const addOtherUser = () => {
+        console.log(t);
         if (newUser) {
             setId(id + 1);
             const user = { id, login: newUser };
@@ -86,12 +86,13 @@ export default function LoansPage() {
             setNewUser("");
             if (allUsersArr.map((x) => x.login).indexOf(user.login) === -1) {
                 enqueueSnackbar(
-                    "вы создали логин для пользователя, которого пока не существует",
+                   t("addLoanPage.createLoginMessage"),
                     { variant: "warning" },
                 );
             }
         } else
-            enqueueSnackbar("введите нового пользователя", {
+            enqueueSnackbar(t("addLoanPage.newUserMessage"), 
+            {
                 variant: "warning",
             });
     };
@@ -131,7 +132,7 @@ export default function LoansPage() {
     const handleClickSendForm = async () => {
         const { event, loans, other } = getAllParanetrsFromPage();
         if (loans.length === 0) {
-            enqueueSnackbar("need to add user", { variant: "warning" });
+            enqueueSnackbar( t("addLoanPage.needAddUserMessage"), { variant: "warning" });
         } else {
             if (!isOk(loans, "reason")) {
                 enqueueSnackbar("заполните все поля со звездочкой", {
@@ -143,14 +144,15 @@ export default function LoansPage() {
                     //проверка на себя
                     if (loans[0].login === localStorage.getItem("login")) {
                         //if user it I
-                        enqueueSnackbar("введите пользователя кроме себя", {
+                        enqueueSnackbar( t("addLoanPage.needAddFields*"), {
                             variant: "error",
                         });
                     } else {
                         //one user, not me
                         if (!isOk(loans, "howMach")) {
                             enqueueSnackbar(
-                                "когда введен один пользователь должно быть заполнено пле сколько",
+                                t("addLoanPage.oneUserNeedHowMach")
+                                ,
                                 { variant: "error" },
                             );
                         } else {
@@ -169,14 +171,14 @@ export default function LoansPage() {
                                 );
                                 console.log(result, resultSendGhost);
                                 enqueueSnackbar(
-                                    "заемы добавлены можете проверить вкладку заемы",
+                                    t("addLoanPage.loansAdded"),
                                     {
                                         variant: "success",
                                     },
                                 );
                             } catch (e) {
                                 enqueueSnackbar(
-                                    `что то пошло не так сообщение: ${e}`,
+                                    `${t("addLoanPage.somethingError")} ${e}`,
                                     {
                                         variant: "error",
                                     },
@@ -196,13 +198,13 @@ export default function LoansPage() {
                         let result = await sendComplitedLoansToDB(sendObj);
                         console.log(result, resultSendGhost);
                         enqueueSnackbar(
-                            "заемы добавлены можете проверить вкладку заемы",
+                            t("addLoanPage.loansAdded"),
                             {
                                 variant: "success",
                             },
                         );
                     } catch (e) {
-                        enqueueSnackbar(`что то пошло не так сообщение: ${e}`, {
+                        enqueueSnackbar(`${t("addLoanPage.somethingError")} ${e}`, {
                             variant: "error",
                         });
                     }
@@ -237,12 +239,13 @@ export default function LoansPage() {
         const aeparatedArr = separateSumForUsers(loans);
         let finalLoans = aeparatedArr.map((item) => {
             let newItem = item;
-            let reason = `${event ? "Event:" + event : ""} Details: ${
-                item.reason
-            }; ${other ? "Other:" + other : ""} `;
+            let reason = `
+                ${event ? (t("addLoanPage.event") + ":" + event) : ""} 
+                ${t("addLoanPage.details")} + ":" + ${item.reason}; 
+                ${other ? (t("addLoanPage.other") + ":"  + other) : ""} `;
             newItem.reason = reason;
             return newItem;
-        });
+        }); 
         return finalLoans;
     };
 
@@ -256,7 +259,7 @@ export default function LoansPage() {
         newLoans.push({
             login: localStorage.getItem("login"),
             howMach: bank < 0 ? -bank : 0,
-            reason: "Cоздатель заема. ",
+            reason: t("addLoanPage.loanCreater"),
         }); //добавление меня по умолчанию ни на что не влияет
         let arrOfUniqueUsersFromLoans = Array.from(
             new Set(newLoans.map((item) => item.login)),
@@ -336,7 +339,7 @@ export default function LoansPage() {
                     onChange={(e) =>
                         handleChangeUsersArr(row.id, "login", e.target.value)
                     }
-                    label="* users"
+                    label={t("addLoanPage.users") + " *"}
                     value={row.login}
                     disabled
                 />
@@ -350,7 +353,7 @@ export default function LoansPage() {
                             e.target.valueAsNumber,
                         )
                     }
-                    label="how mach"
+                    label={t("addLoanPage.howMach")}
                 />
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
@@ -361,10 +364,10 @@ export default function LoansPage() {
                             e.target.value + " ",
                         )
                     }
-                    label="* details"
+                    label={t("addLoanPage.details") + " *"}
                 />
                 <Button variant="outlined" onClick={() => deleteInput(row.id)}>
-                    delete
+                    {t("addLoanPage.delete")}
                 </Button>
             </Box>
         ));
@@ -380,7 +383,7 @@ export default function LoansPage() {
             <Box>
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
-                    label="Event"
+                    label={t("addLoanPage.event")}
                     margin="normal"
                     onChange={handleChangeEvent}
                     value={event}
@@ -393,7 +396,7 @@ export default function LoansPage() {
                         options={allUsersArr.map((option) => option["login"])}
                         sx={{ width: 300 }}
                         renderInput={(params) => (
-                            <TextField {...params} label="select user login" />
+                            <TextField {...params} label={t("addLoanPage.selectUserlogin")} />
                         )}
                         onBlur={handleChangeNewUser}
                         value={newUser}
@@ -403,7 +406,7 @@ export default function LoansPage() {
                         variant="outlined"
                         onClick={() => addOtherUser(newUser)}
                     >
-                        Add new user
+                        {t("addLoanPage.addNewUser")}
                     </Button>
                 </Stack>
 
@@ -411,7 +414,7 @@ export default function LoansPage() {
 
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
-                    label="other"
+                    label={t("addLoanPage.other")}
                     margin="normal"
                     onChange={handleChangeOther}
                     value={other}
@@ -419,17 +422,17 @@ export default function LoansPage() {
 
                 <Box>
                     <Button variant="outlined" onClick={handleClickSendForm}>
-                        Add
+                        {t("addLoanPage.create")}
                     </Button>
                     <Button
                         variant="outlined"
                         onClick={() => handleClearForm()}
                     >
-                        Clear Form
+                        {t("addLoanPage.clearForm")}
                     </Button>
                 </Box>
             </Box>
-            <Div>{"* Поля со звездочкой обязательны к заполнению"}</Div>
+            <Div>{t("addLoanPage.fieldsWith*Should")}</Div>
         </>
     );
 }

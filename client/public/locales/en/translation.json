@@ -1,0 +1,70 @@
+{
+  "addLoanPage": {
+    "createLoginMessage": "you create login for user, it doesn't exist yet",
+    "newUserMessage": "type a new user",
+    "needAddUserMessage": "you need to add a user",
+    "needAddFields*": "complete all fields marked with an asterisk",
+    "oneUserNeedHowMach": "when added one user, you should enter how mach field",
+    "loansAdded": "loans added, check loans page",
+    "somethingError": "something went wrong:",
+    "event": "event",
+    "details": "details",
+    "other": "other",
+    "loanCreater": "loan creater. ",
+    "users": "users",
+    "howMach": "how mach",
+    "delete": "delete",
+    "selectUserlogin": "select the user's login",
+    "addNewUser": "add a new user",
+    "create": "create",
+    "clearForm": "clear form",
+    "fieldsWith*Should": "* fields marked with an asterisk required to be filled in"
+  },
+  "layout": {
+    "contacts": "users",
+    "loans": "loans",
+    "createLoan": "create a loan",
+    "login": "login",
+    "logOut": "logout",
+    "hello": "hello"
+  },
+  "loansPage": {
+    "daysAgo": "lays ago",
+    "somethingGoesWrong": "something went wrong",
+    "myLoans": "my loans",
+    "allLoans": "all loans",
+    "search...": "search...",
+    "lookFor": "look for",
+    "login": "login",
+    "howMach": "howMach",
+    "dateOfCreation": "creation date",
+    "reason": "reason",
+    "sortBy": "sort by",
+    "without": "nonsort"
+  },
+  "loginPage": {
+    "login": "login",
+    "firstName": "firstName",
+    "phone": "phone",
+    "password": "password",
+    "cancel": "cancel",
+    "createAccaunt": "create account",
+    "registration": "registration",
+    "feedInformation": "feed information"
+  },
+  "usersPage": {
+    "myContacts": "my contacts",
+    "somethingGoesWrong": "something went wrong",
+    "allUsers": "all users",
+    "search...": "search...",
+    "lookFor": "look for",
+    "login": "login",
+    "firstName": "firstName",
+    "phone": "phone",
+    "howMach": "howMach",
+    "dateOfCreation": "creation date",
+    "reason": "reason",
+    "loansOfUser": "user's loans"
+  }
+}
+

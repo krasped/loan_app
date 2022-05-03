@@ -3,6 +3,7 @@ const router = Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const GhostUser = require('../models/GhostUser');
 const {body, validationResult} = require('express-validator');
 // /api/auth
 
@@ -11,6 +12,17 @@ router.get('/',
         res.json('redirect');
     }
 )
+
+router.get('/ghosts', async(req, res) => {
+    try{
+        const ghost = await GhostUser.find({})
+        res.json({ghosts: ghost})
+    }catch (e) {
+        res.status(500).json({
+            message: "что-то пошло не так попробуйте снова",
+        });
+    }
+})
 
 router.post(
     '/register', 

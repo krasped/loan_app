@@ -2,13 +2,14 @@ import { Link, Outlet } from "react-router-dom";
 import {Stack, Button, CssBaseline, AppBar, Toolbar, Container , Box } from "@mui/material";
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
+import LanguageBtn from '../LanguageBtn';
 
 export default function Layout() {
     const dispatch = useDispatch();
-    // const isLoggedIn = true;
     const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
     const email = useSelector((state) => state.autorization.userEmail);
-
+    const { t } = useTranslation();
     const addLoginDataToStore = () => {
         dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
         dispatch({ type: "USER_ID", payload: localStorage.getItem('userId') });
@@ -31,14 +32,18 @@ export default function Layout() {
                 <Box sx={{ flexGrow: 1 }}>
                     <Button variant="contained">
                     <Link to="users" color="white" style={{ textDecoration: 'none', color: "white" }}>
-                        contacts
+                        {t("layout.contacts")}  
                     </Link>
                     </Button>
                     <Button variant="contained">
-                        <Link to="loans" style={{ textDecoration: 'none', color: "white" }}>loans</Link>
+                        <Link to="loans" style={{ textDecoration: 'none', color: "white" }}>
+                            {t("layout.loans")}
+                        </Link>
                     </Button>
                     <Button variant="contained">
-                        <Link to="add_loan" style={{ textDecoration: 'none', color: "white" }}>create loan</Link>
+                        <Link to="add_loan" style={{ textDecoration: 'none', color: "white" }}>
+                            {t("layout.createLoan")}
+                        </Link>
                     </Button>
                 </Box>
             )
@@ -64,10 +69,12 @@ export default function Layout() {
                         >
                             {!isLoggedIn?
                                 <Button variant="contained">
-                                    <Link to="login" style={{ textDecoration: 'none', color: "white" }}>Login</Link>
+                                    <Link to="login" style={{ textDecoration: 'none', color: "white" }}>
+                                        {t("layout.login")}
+                                    </Link>
                                 </Button>:
                                 <Button variant="contained" onClick={logOut}>
-                                    Log out
+                                    {t("layout.logOut")}
                                 </Button>
                             }
                             
@@ -75,7 +82,8 @@ export default function Layout() {
                     </Stack>
                     </Box>
                     <Box sx={{ p: 1 ,ml: 'auto' }}>
-                        {email?` email: ${email}`:null}
+                        {localStorage.getItem('login') ? ` ${t("layout.hello")}  ${localStorage.getItem('login')}` : null}
+                            <LanguageBtn/>
                     </Box>
                 </Toolbar>
             </AppBar>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import {
     Button,
@@ -15,6 +16,7 @@ import {
 import GotService from "../server";
 
 const LoginPage = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const got = new GotService();
     const [open, setOpen] = useState(false);
@@ -103,17 +105,17 @@ const LoginPage = () => {
     return (
         <>
             <Button variant="outlined" onClick={handleClickOpen}>
-                registration
+                {t("loginPage.registration")}
             </Button>
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>create accaunt</DialogTitle>
+                <DialogTitle>{t("loginPage.feedInformation")}</DialogTitle>
                 <DialogContent>
                     <TextField
                         onChange={handleChangeRegistrationLogin}
                         value={registrationLogin}
                         autoFocus
                         margin="dense"
-                        label="Login"
+                        label={t("loginPage.login")}
                         type="text"
                         fullWidth
                         variant="standard"
@@ -123,7 +125,7 @@ const LoginPage = () => {
                         value={registrationFirstName}
                         autoFocus
                         margin="dense"
-                        label="First name"
+                        label={t("loginPage.firstName")}
                         type="text"
                         fullWidth
                         variant="standard"
@@ -133,7 +135,7 @@ const LoginPage = () => {
                         value={registrationPhone}
                         autoFocus
                         margin="dense"
-                        label="phone"
+                        label={t("loginPage.phone")}
                         type="tel"
                         fullWidth
                         variant="standard"
@@ -143,20 +145,21 @@ const LoginPage = () => {
                         value={registrationPassword}
                         autoFocus
                         margin="dense"
-                        label="password"
+                        label={t("loginPage.password")}
                         type="password"
                         fullWidth
                         variant="standard"
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleClose}>{t("loginPage.cancel")}</Button>
                     <Button
                         onClick={() => {
                             handleAdd(registrationLogin, registrationFirstName, registrationPhone, registrationPassword);
                         }}
                     >
-                        Create
+                        {t("loginPage.createAccaunt")}
+
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -166,7 +169,7 @@ const LoginPage = () => {
                     value={login}
                     autoFocus
                     margin="dense"
-                    label="login"
+                    label={t("loginPage.login")}
                     type="text"
                     fullWidth
                     variant="standard"
@@ -176,7 +179,7 @@ const LoginPage = () => {
                     value={password}
                     autoFocus
                     margin="dense"
-                    label="password"
+                    label={t("loginPage.password")}
                     type="password"
                     fullWidth
                     variant="standard"
@@ -188,7 +191,7 @@ const LoginPage = () => {
                     }}
                 >
                     <Link to="/" color="white" style={{ textDecoration: 'none', color: "blue" }}>
-                        Login 
+                        {t("loginPage.login")}
                     </Link>
                     {/* добавить функционал для перенаправления при логине и ошибках */}
                 </Button>

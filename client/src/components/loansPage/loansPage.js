@@ -17,12 +17,13 @@ import {
     TableCell,
     TableBody,
 } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from 'react-i18next';
 import GotService from "../server";
 import Spiner from "../spiner";
 
 export default function LoansPage() {
     const got = new GotService();
+    const { t } = useTranslation();
 
     const [table, setTable] = useState(null);
     const [allOrMy, setAllOrMy] = useState(true); //true equel allLoans
@@ -43,7 +44,7 @@ export default function LoansPage() {
 
     const transformDateToDaysAgo = (data) => {
         let newData = data.map((item) => {
-            item.date = Math.floor((Date.now() - Date.parse(item.date))/1000/60/60/24) + ' days ago';
+            item.date = Math.floor((Date.now() - Date.parse(item.date))/1000/60/60/24) + ' ' +  t("loansPage.daysAgo");
             return item;
         })
         return newData;
@@ -117,7 +118,7 @@ export default function LoansPage() {
                 setMyLoansData(transformDateToDaysAgo(dbPromise["loans"]));
                 break;
             default:
-                console.log("что то пошло не так");
+                console.log(t("loansPage.somethingGoesWrong"));
         }
     };
 
@@ -173,14 +174,18 @@ export default function LoansPage() {
                     variant="outlined"
                     aria-label="outlined button group"
                 >
-                    <Button onClick={() => setAllOrMy(false)}>My loans</Button>
-                    <Button onClick={() => setAllOrMy(true)}>All loans</Button>
+                    <Button onClick={() => setAllOrMy(false)}>
+                        {t("loansPage.myLoans")}
+                    </Button>
+                    <Button onClick={() => setAllOrMy(true)}>
+                        {t("loansPage.allLoans")}
+                    </Button>
                 </ButtonGroup>
                 <Box>
                     <TextField
                         value = {searchValue}
                         onChange={handleCangeSearchValue}
-                        label={"search..."}
+                        label={t("loansPage.search...")}
                         className="search"
                         margin="normal"
                     />
@@ -188,37 +193,36 @@ export default function LoansPage() {
                 <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="demo-simple-select-label">
-                            LookFor
+                            {t("loansPage.lookFor")}
                         </InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={loginHowDateReason}
-                            label="LookFor"
+                            label={t("loansPage.lookFor")}
                             onChange={handleChangeLoginHowDateReason}
                         >
-                            <MenuItem value={"login"}>login</MenuItem>
-                            <MenuItem value={"sortLogin"}>sortLogin</MenuItem>
-                            <MenuItem value={"howMach"}>how much</MenuItem>
-                            <MenuItem value={"date"}>days ago</MenuItem>
-                            <MenuItem value={"reason"}>reason</MenuItem>
+                            <MenuItem value={"login"}>{t("loansPage.login")}</MenuItem>
+                            <MenuItem value={"howMach"}>{t("loansPage.howMach")}</MenuItem>
+                            <MenuItem value={"date"}>{t("loansPage.dateOfCreation")}</MenuItem>
+                            <MenuItem value={"reason"}>{t("loansPage.reason")}</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
                 <Box sx={{ minWidth: 120 }}>
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="demo-simple-select-label">
-                            sort by
+                            {t("loansPage.sortBy")}
                         </InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-seStandart"
                             value={sortBy}
-                            label="sort by"
+                            label={t("loansPage.sortBy")}
                             onChange={handleChangeSortBy}
                         >
-                            <MenuItem value={"standart"}>Standart</MenuItem>
-                            <MenuItem value={"login"}>Login</MenuItem>
+                            <MenuItem value={"standart"}>{t("loansPage.without")}</MenuItem>
+                            <MenuItem value={"login"}>{t("loansPage.login")}</MenuItem>
                         </Select>
                     </FormControl>
                 </Box>
@@ -228,12 +232,12 @@ export default function LoansPage() {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Login</TableCell>
-                            <TableCell align="center">How much</TableCell>
+                            <TableCell>{t("loansPage.login")}</TableCell>
+                            <TableCell align="center">{t("loansPage.howMach")}</TableCell>
                             <TableCell align="center">
-                                date of creation
+                                {t("loansPage.dateOfCreation")}
                             </TableCell>
-                            <TableCell align="right">reason</TableCell>
+                            <TableCell align="right">{t("loansPage.reason")}</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>{table}</TableBody>
