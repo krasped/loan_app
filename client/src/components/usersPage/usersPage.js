@@ -17,6 +17,9 @@ import {
     TableCell,
     TableBody,
     IconButton,
+    Collapse,
+    Typography,
+    Row,
 } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -39,6 +42,7 @@ export default function UsersPage() {
 
     const [selectedLogin, setSelectedLogin] = useState("");
     const [friends, setFriends] = useState([]);
+    const [totalByUser, setTotalByUser] = useState(0);
 
     const [allOrFriends, setAllOrFriends] = useState(true); //true equel allUsers
     const [searchValue, setSearchValue] = useState("");
@@ -61,7 +65,6 @@ export default function UsersPage() {
         loginPhoneName = "login",
         data,
     ) => {
-        console.log(allOrFriends, searchValue, loginPhoneName, data);
         if (searchValue === "") {
             return data;
         }else {
@@ -95,7 +98,6 @@ export default function UsersPage() {
 
     const updateDataFromDb = async function (url, res, obj) {
         let dbPromise;
-        console.log(url, obj);
         if (!obj) {
             dbPromise = await got.getResource(url);
         } else {
@@ -103,7 +105,7 @@ export default function UsersPage() {
         }
         switch (res) {
             case "loans":
-                setLoansByUserData(dbPromise[res]);
+                setLoansByUserData(transformDateToDaysAgo(dbPromise[res]));
                 break;
             case "contacts":
                 setFriends(dbPromise["users"][res]);
@@ -116,12 +118,20 @@ export default function UsersPage() {
         }
     };
 
-    const renderTable = (data) => {
-        if (!data) return;
-        return data.map((row) => (
+    const renderTable = (rows) => {
+        if (!rows) return;
+        return (
+            rows.map((row) => (
+                <RenderTable1 key={row._id} row={row} />
+            ))
+        )
+    }
+
+    let RenderTable1 = (props) => {
+        const {row} = props;
+        return <>
             <TableRow
-                key={row._id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{ '& > *': { borderBottom: 'unset' } }}
             >
                 <TableCell>
                     <IconButton
@@ -154,10 +164,60 @@ export default function UsersPage() {
                             <PersonAddAlt1Icon />
                         )}
                     </IconButton>
-                </TableCell>
+                </TableCell>                   
             </TableRow>
-        ));
+
+           
+            <TableRow>
+                   
+                        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                        <Collapse in={selectedLogin === row.login} timeout="auto" unmountOnExit>
+                            
+                            {(  loansTable['length'] === 0 ) ?
+                                <Box sx={{ margin: 1 }}>
+                                    <Typography variant="h6" gutterBottom component="div">
+                                        {t("usersPage.noLoans")}
+                                    </Typography>  
+                                </Box>:
+                                
+                                <Box sx={{ margin: 1 }}>                                
+                                    <Typography variant="h6" gutterBottom component="div">
+                                        {t("usersPage.loansOfUser")}: {selectedLogin}
+                                    </Typography>
+                                    <Table size="small" aria-label="purchases">
+                                        <TableHead>
+                                        <TableRow>
+                                            <TableCell align="left">{t("usersPage.login")}</TableCell>
+                                            <TableCell align="center">{t("usersPage.howMach")}</TableCell>
+                                            <TableCell align="center">{t("usersPage.dateOfCreation")}</TableCell>
+                                            <TableCell align="right">{t("usersPage.reason")}</TableCell>
+                                        </TableRow>
+                                        </TableHead>
+                                        <TableBody>{loansTable}
+                                        </TableBody>
+                                    </Table> 
+                                    <Typography variant="h6" gutterBottom component="div">
+                                        {t("usersPage.totalMoney")}: {totalByUser}  {t("usersPage.money")}
+                                    </Typography>
+                                </Box>
+                            }
+ 
+                        </Collapse>
+                        </TableCell>
+            </TableRow>     
+           
+            
+        </>
     };
+
+    const transformDateToDaysAgo = (data) => {
+        let newData = data.map((item) => {
+            item.date = Math.floor((Date.now() - Date.parse(item.date))/1000/60/60/24) + ' ' +  t("loansPage.daysAgo");
+            return item;
+        })
+        return newData;
+        // date.toISOString().split('T')[0]//data in format yyyy-mm-dd
+    }
 
     const renderLoansTable = (data) => {
         if (!data) return;
@@ -182,7 +242,6 @@ export default function UsersPage() {
 
     const handleAddOrRemoveContact = async (_id) => {
         let url = isContact(_id) ? "users/removeContact" : "users/addContact";
-        console.log(_id);
         let result = await got.postResource(url, {
             _id: curentUserId,
             contactId: _id,
@@ -192,15 +251,19 @@ export default function UsersPage() {
     };
 
     const handleChangeSelectedLogin = (login) => {
-        setSelectedLogin(login);
+        setSelectedLogin((selectedLogin === login) ? null : login);
     };
     const handleCangeSearchValue = (e) => {
         setSearchValue(e.target.value);
     };
 
-    // useEffect(() => {
-    //     searchData(allOrFriends, searchValue, loginPhoneName, usersData);
-    // }, [allOrFriends, searchValue, loginPhoneName]);
+    const calcTotalByUser = (data) => {
+        return( 
+            (data.length !== 0) ? 
+            ((data.map(item => item.howMach)).reduce((a,b) => a + b)):
+            0
+        )
+    }
 
     useEffect(() => {
         allOrFriends
@@ -212,9 +275,13 @@ export default function UsersPage() {
     }, [allOrFriends, searchValue, loginPhoneName]);
 
     useEffect(() => {
-        setLoansTable(renderLoansTable(loansByUserData));
         setTable(allOrFriends ? renderTable(searchData(searchValue, loginPhoneName, usersData)) : renderTable(searchData(searchValue,loginPhoneName, friends)));
-    }, [loansByUserData, usersData, friends]);
+    }, [loansTable, usersData, friends]);
+
+    useEffect(() => {
+        setLoansTable(renderLoansTable(loansByUserData));
+        setTotalByUser(calcTotalByUser(loansByUserData));
+    }, [loansByUserData]);
 
     useEffect(() => {
         updateDataFromDb("users/loans", "loans", { login: selectedLogin }); //строчка для плоучения нужного займа
@@ -266,7 +333,7 @@ export default function UsersPage() {
             </Stack>
             <Stack spacing={2} direction="row" alignItems="center">
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 500 }} aria-label="simple table">
+                    <Table sx={{ minWidth: 500 }} aria-label="collapsible table">
                         <TableHead>
                             <TableRow>
                                 <TableCell align="left"></TableCell>
@@ -276,11 +343,14 @@ export default function UsersPage() {
                                 <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody>{table}</TableBody>
+                        <TableBody>{table}
+                            
+                        </TableBody>
+                        
                     </Table>
                 </TableContainer>
 
-                <TableContainer component={Paper}>
+                {/* <TableContainer component={Paper}>
                     {t("usersPage.loansOfUser")}: {selectedLogin}
                     <Table sx={{ minWidth: 200 }} aria-label="simple table">
                         <TableHead>
@@ -295,7 +365,7 @@ export default function UsersPage() {
                         </TableHead>
                         <TableBody>{loansTable ? loansTable : null}</TableBody>
                     </Table>
-                </TableContainer>
+                </TableContainer> */}
             </Stack>
         </>
     );

@@ -16,9 +16,9 @@ const findById = function (token, cb) {
             });
             if (condidate && ( Math.floor(Date.now()/1000) - decoded.iat < 18000)) {//check token time created 5 h
                 return cb(null, condidate);
-            } else return cb(null, null);
+            } else return cb(null, json('redirect'));
         } catch (e) {
-            (err) => console.log(err);
+            (err) => console.log('beare err'+err);
         }
     });
 };

@@ -64,7 +64,10 @@
     "howMach": "сумма",
     "dateOfCreation": "дата создания",
     "reason": "причина",
-    "loansOfUser": "заемы пользователя"
+    "loansOfUser": "заемы пользователя",
+    "noLoans": "нет заемов",
+    "totalMoney": "итого по пользователю",
+    "money": "денях"
   }
 }
 

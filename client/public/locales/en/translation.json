@@ -29,7 +29,7 @@
     "hello": "hello"
   },
   "loansPage": {
-    "daysAgo": "lays ago",
+    "daysAgo": "days ago",
     "somethingGoesWrong": "something went wrong",
     "myLoans": "my loans",
     "allLoans": "all loans",
@@ -64,7 +64,10 @@
     "howMach": "howMach",
     "dateOfCreation": "creation date",
     "reason": "reason",
-    "loansOfUser": "user's loans"
+    "loansOfUser": "user's loans",
+    "noLoans": "has no loans",
+    "totalMoney": "total by user",
+    "money": "money"
   }
 }
 
