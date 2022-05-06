@@ -5,7 +5,7 @@
 import { useDispatch } from 'react-redux';
 function GotService() {
     const dispatch = useDispatch();
-    this._apiBase = "http://localhost:5000/";
+    this._apiBase = "https://still-cove-39145.herokuapp.com/";
 
     const logout = (responce) => {
         if (responce === 'redirect'){
