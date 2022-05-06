@@ -20,6 +20,12 @@ app.use('/users',passport.authenticate('bearer', {failureRedirect: '/auth', sess
 app.use('/loans',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),loans);
 app.use('/add_loan',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),add_loan);
 app.use('*', (req, res) => res.status(404).json({error:"not found"}));
+//for heroku
+app.use(express.static('client/build'));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './client', 'build', 'index.html'));
+})
 
 // app.use("/", mainRouter);
 // app.use("/user",passport.authenticate('bearer', {failureRedirect: '/login', session: false, failureMessage: true }), authRouter);
