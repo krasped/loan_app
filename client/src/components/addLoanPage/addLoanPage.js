@@ -240,8 +240,8 @@ export default function LoansPage() {
         let finalLoans = aeparatedArr.map((item) => {
             let newItem = item;
             let reason = `
-                ${event ? (t("addLoanPage.event") + ":" + event) : ""} 
-                ${t("addLoanPage.details")} + ":" + ${item.reason}; 
+                ${event ? (t("addLoanPage.event") + ":" + event + ";") : ""} 
+                ${t("addLoanPage.details")}: ${item.reason}; 
                 ${other ? (t("addLoanPage.other") + ":"  + other) : ""} `;
             newItem.reason = reason;
             return newItem;
