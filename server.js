@@ -19,7 +19,6 @@ app.use('/auth',auth);
 app.use('/users',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),users);
 app.use('/loans',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),loans);
 app.use('/add_loan',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),add_loan);
-app.use('*', (req, res) => res.status(404).json({error:"not found"}));
 //for heroku
 app.use(express.static('client/build'));
 
