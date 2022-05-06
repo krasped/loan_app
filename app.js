@@ -1,23 +1,33 @@
-const app = require("./server.js");
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const passport = require('passport');
+// const cookieParser = require("cookie-parser");
+const app = express();
+require('./strategies/bearer.js')
 
-const port = process.env.PORT || 6000;
 
-mongoose
-    .connect(process.env.MONGO_URI, {
-        maxPoolSize: 50,
-        wtimeoutMS: 2500,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    })
-    .catch((err) => {
-        console.error(err.stack);
-        process.exit(1);
-    })
-    .then(async (client) => {
-        app.listen(port, () => {
-            console.log(`App has been started on port ${port}...`);
-        });
-    });
+const auth = require('./routes/auth');
+const users = require('./routes/users');
+const loans = require('./routes/loans');
+const add_loan = require('./routes/add_loan');
+app.use(cors());
+app.use(express.json());
+// app.use(cookieParser());
+app.use(passport.initialize());
+
+app.use('/auth',auth);
+app.use('/users',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),users);
+app.use('/loans',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),loans);
+app.use('/add_loan',passport.authenticate('bearer', {failureRedirect: '/auth', session: false, failureMessage: true }),add_loan);
+//for heroku
+app.use(express.static('client/build'));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, './client', 'build', 'index.html'));
+})
+
+// app.use("/", mainRouter);
+// app.use("/user",passport.authenticate('bearer', {failureRedirect: '/login', session: false, failureMessage: true }), authRouter);
+
+
+module.exports = app;
