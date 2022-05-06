@@ -50,7 +50,16 @@
     "cancel": "cancel",
     "createAccaunt": "create account",
     "registration": "registration",
-    "feedInformation": "feed information"
+    "feedInformation": "feed information",
+    "alreadyExists": "a user with this login or phone already exist",
+    "invalidData": "invalid data, password minimum 6 characters, phone number, login minimum 1 characters",
+    "invalid": "invalid data",
+    "userCreated": "user created",
+    "changeLogin": "change login, or choose another action",
+    "serverError": "error accessing the server, wait, or choose another action",
+    "ghost": "login already exists in loans",
+    "isItYou": "Is it really you?",
+    "confirm": "confirm"
   },
   "usersPage": {
     "myContacts": "my contacts",

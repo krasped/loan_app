@@ -135,7 +135,7 @@ export default function LoansPage() {
             enqueueSnackbar( t("addLoanPage.needAddUserMessage"), { variant: "warning" });
         } else {
             if (!isOk(loans, "reason")) {
-                enqueueSnackbar("заполните все поля со звездочкой", {
+                enqueueSnackbar(t("addLoanPage.needAddFields*"), {
                     variant: "warning",
                 });
             } else {

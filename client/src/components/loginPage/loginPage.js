@@ -27,7 +27,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const [openQuestion, setOpenQuestion] = useState(false);
     const [isUserAgree, setIsUserAgree] = useState(true);
-    const [waitUser, setWaitUser] = useState(false);
+
 
     const [registrationLogin, setRegistrationLogin] = useState("");
     const [registrationFirstName, setRegistrationFirstName] = useState("");
@@ -82,13 +82,13 @@ const LoginPage = () => {
             console.log(1)
            return true; 
         }else if((usersArr.indexOf(login) !== -1) || (phoneArr.indexOf(phone) !== -1)){
-            enqueueSnackbar("пользователь с таким логином или телефоном уже существует", {
+            enqueueSnackbar(t("loginPage.alreadyExists"), {
                 variant: "warning",
             });
             return false
         }else{
             console.log(1);
-            enqueueSnackbar("невалидные данные, пароль минимум 6 символов, телефон число, логин минимум 1 символ", {
+            enqueueSnackbar(t("loginPage.invalidData"), {
                 variant: "warning",
             });
             return false
@@ -109,14 +109,14 @@ const LoginPage = () => {
                 if (!responce) {
                     throw new Error();
                 } else {
-                    enqueueSnackbar("пользователь создан", {
+                    enqueueSnackbar(t("loginPage.userCreated"), {
                         variant: "success",
                     });
                     handleClose();
                 }
             } else {
                 enqueueSnackbar(
-                    "измените логин, или выберете другое действие",
+                    t("loginPage.changeLogin"),
                     {
                         variant: "warning",
                     },
@@ -125,7 +125,7 @@ const LoginPage = () => {
         }
         catch(e){
             enqueueSnackbar(
-                "ошибка обращения к серверу, подождите, либо выполните другое действие",
+                t("loginPage.serverError"),
                 {
                     variant: "error",
                 },
@@ -139,15 +139,13 @@ const LoginPage = () => {
             try {
                 let ghostsArr = await getGhostLoginArr();
                 if (ghostsArr.indexOf(login) !== -1) {
-                    //если введенный пользователем логин есть в ghosts
-                    console.log('все таки гост');
                     handleClickOpenQuestion();
                 }
                 else{setIsUserAgree(true); afterUserConfirm(login, firstName, phone, password)}
             } catch (e) {
                 console.log(e);
                 enqueueSnackbar(
-                    "ошибка обращения к серверу, подождите, либо выполните другое действие",
+                    t("loginPage.serverError"),
                     {
                         variant: "error",
                     },
@@ -155,7 +153,7 @@ const LoginPage = () => {
             }
  
         } else {
-            enqueueSnackbar("некоректные данные", {
+            enqueueSnackbar(t("loginPage.invalid"), {
                 variant: "warning",
             });
         }
@@ -294,17 +292,17 @@ const LoginPage = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"данный логин уже используется в заемах"}
+                    {t("loginPage.ghost")}
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Это действительно вы?
+                        {t("loginPage.isItYou")}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleCloseQuestion(false)}>Отмена</Button>
                     <Button onClick={() => handleCloseQuestion(true)} autoFocus>
-                        подтвердить
+                        {t("loginPage.confirm")}
                     </Button>
                 </DialogActions>
             </Dialog>
