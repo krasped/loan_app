@@ -58,7 +58,7 @@ const LoginPage = () => {
 
     const getUsersKeyArr = async (key) => {
         let result = await got.getResource(`auth/all/login`);
-        console.log(result)
+        console.log(result);
         return result.users.map((item) => item[key]);
     }
 
