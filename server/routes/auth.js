@@ -13,6 +13,17 @@ router.get('/',
     }
 )
 
+router.get("/all/login", async (req, res) => {
+    try {
+        const user = await User.find({},{login: 1, phone: 1} );
+        res.json({ users: user });
+    } catch (e) {
+        res.status(500).json({
+            message: "что-то пошло не так попробуйте снова",
+        });
+    }
+});
+
 router.get('/ghosts', async(req, res) => {
     try{
         const ghost = await GhostUser.find({})
@@ -48,7 +59,7 @@ router.post(
             if(candidate) {
                 return res.status(400).json({message: 'такой пользователь существует'})
             }
-            
+            const ghost = await GhostUser.findOneAndRemove({login});//просто удаляет если есть ghost
             const hashedPassword = await bcrypt.hash(password, 13);
             const user = new User({login, firstName, phone, password: hashedPassword});
             await user.save();
