@@ -5,8 +5,7 @@
 import { useDispatch } from 'react-redux';
 function GotService() {
     const dispatch = useDispatch();
-    this._apiBase = "";
-
+    this._apiBase = "http://localhost:5000/";// убрать при деплое
     const logout = (responce) => {
         if (responce === 'redirect'){
             localStorage.removeItem('token');
