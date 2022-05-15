@@ -10,6 +10,7 @@ function GotService() {
     const { enqueueSnackbar } = useSnackbar();
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    this._apiBase = '';
     // this._apiBase = "http://localhost:5000/";// убрать при деплое
 
 
