@@ -206,6 +206,7 @@ const LoginPage = () => {
             localStorage.setItem("isLogged", true);
             localStorage.setItem("userId", getTokenId.userId);
             localStorage.setItem("login", getTokenId.login);
+            // return <Navigate to="/login" replace />
         } else {
             localStorage.removeItem("token");
             localStorage.removeItem("isLogged");
@@ -227,6 +228,7 @@ const LoginPage = () => {
                 <DialogTitle>{t("loginPage.feedInformation")}</DialogTitle>
                 <DialogContent>
                     <TextField
+                    
                         onChange={handleChangeRegistrationLogin}
                         value={registrationLogin}
                         autoFocus
@@ -239,7 +241,6 @@ const LoginPage = () => {
                     <TextField
                         onChange={handleChangeRegistrationFirstName}
                         value={registrationFirstName}
-                        autoFocus
                         margin="dense"
                         label={t("loginPage.firstName")}
                         type="text"
@@ -249,7 +250,6 @@ const LoginPage = () => {
                     <TextField
                         onChange={handleChangeRegistrationPhone}
                         value={registrationPhone}
-                        autoFocus
                         margin="dense"
                         label={t("loginPage.phone")}
                         type="tel"
@@ -259,7 +259,6 @@ const LoginPage = () => {
                     <TextField
                         onChange={handleChangeRegistrationPassword}
                         value={registrationPassword}
-                        autoFocus
                         margin="dense"
                         label={t("loginPage.password")}
                         type="password"
@@ -300,7 +299,7 @@ const LoginPage = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleCloseQuestion(false)}>Отмена</Button>
+                    <Button onClick={() => handleCloseQuestion(false)}>{t("loginPage.cancel")}</Button>
                     <Button onClick={() => handleCloseQuestion(true)} autoFocus>
                         {t("loginPage.confirm")}
                     </Button>
@@ -320,7 +319,6 @@ const LoginPage = () => {
                 <TextField
                     onChange={handleChangeLoginPassword}
                     value={password}
-                    autoFocus
                     margin="dense"
                     label={t("loginPage.password")}
                     type="password"

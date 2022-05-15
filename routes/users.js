@@ -41,6 +41,7 @@ router.post("/contacts", async (req, res) => {
 });
 
 router.post("/loans", async (req, res) => {
+    console.log('loans')
     try {
         const { login } = req.body;
         const loan = await Loan.find({ login });

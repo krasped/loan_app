@@ -3,19 +3,35 @@
  */
 
 import { useDispatch } from 'react-redux';
+import { useTranslation } from "react-i18next";
+import { useSnackbar } from "notistack";
+
 function GotService() {
+    const { enqueueSnackbar } = useSnackbar();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     this._apiBase = "http://localhost:5000/";// убрать при деплое
-    const logout = (responce) => {
-        if (responce === 'redirect'){
+
+
+    const logout = (responce, resOk) => {
+        console.log(responce, resOk);
+        if (responce.redirect && responce.redirect === 'redirect'){
             localStorage.removeItem('token');
             localStorage.removeItem('isLogged');
             localStorage.removeItem('userId');
             dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
             dispatch({ type: "USER_ID", payload: localStorage.getItem('userId') });
             dispatch({ type: "USER_TOKEN", payload: localStorage.getItem('token') });
+        }else {
+            
+        }
+        if(!resOk){
+            enqueueSnackbar(t("loginPage.invalid"), {
+                variant: "warning",
+            });
         }
     }
+    
 
     const getUserToken = () =>{
         return (localStorage.getItem('token'))?localStorage.getItem('token'): '';
@@ -31,7 +47,7 @@ function GotService() {
                 })
             });
             let json = await response.json();
-            logout(json);
+            logout(json, response.ok);
             return json;
         } catch (error) {
             console.error("error: ", error);
@@ -51,7 +67,7 @@ function GotService() {
             console.log(response);
             let json = await response.json();
             console.log("success", JSON.stringify(json));
-            logout(json);
+            logout(json, response.ok);
             return json;
         } catch (error) {
             console.error("error: ", error);

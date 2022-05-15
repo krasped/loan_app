@@ -7,18 +7,21 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const findById = function (token, cb) {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     process.nextTick(async function () {
         try {
-            
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const condidate = await User.findById({
                 _id: decoded.userId,
             });
-            if (condidate && ( Math.floor(Date.now()/1000) - decoded.iat < 18000)) {//check token time created 5 h
+            if (
+                condidate &&
+                Math.floor(Date.now() / 1000) - decoded.iat < 18000
+            ) {
+                //check token time created 5 h
                 return cb(null, condidate);
-            } else return cb(null, json('redirect'));
+            } else return cb(null, false);
         } catch (e) {
-            (err) => console.log('beare err'+err);
+            return cb(e);
         }
     });
 };
@@ -26,10 +29,7 @@ const findById = function (token, cb) {
 passport.use(
     new BearerStrategy(function (token, cb) {
         findById(token, function (err, user) {
-            if (err) {
-                return cb(err);
-            }
-            if (!user) {
+            if (err || !user) {
                 return cb(null, false);
             }
             return cb(null, user);

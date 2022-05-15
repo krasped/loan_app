@@ -7,9 +7,14 @@ const GhostUser = require('../models/GhostUser');
 const {body, validationResult} = require('express-validator');
 // /api/auth
 
-router.get('/',
+router.get('/failure',
     function (req, res) {
-        res.json('redirect');
+        res.json({redirect:'redirect'});
+    }
+)
+router.get('/success',
+    function (req, res) {
+        res.json({"redirect":'successRedirect'});
     }
 )
 
