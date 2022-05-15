@@ -12,7 +12,8 @@ import LoansPage from "../loansPage";
 
 function App() {
 
-    const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
+    const isLoggedIn = localStorage.getItem('isLogged');
+    // useSelector((state) => state.autorization.isLoggedIn);
 
     function RequireAuth({ children }) {
         let location = useLocation();

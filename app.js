@@ -52,7 +52,5 @@ app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "./client", "build", "index.html"));
 });
 
-// app.use("/", mainRouter);
-// app.use("/user",passport.authenticate('bearer', {failureRedirect: '/login', session: false, failureMessage: true }), authRouter);
 
 module.exports = app;

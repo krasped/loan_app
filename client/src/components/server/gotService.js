@@ -14,7 +14,6 @@ function GotService() {
 
 
     const logout = (responce, resOk) => {
-        console.log(responce, resOk);
         if (responce.redirect && responce.redirect === 'redirect'){
             localStorage.removeItem('token');
             localStorage.removeItem('isLogged');
@@ -64,9 +63,8 @@ function GotService() {
                     'Content-Type': 'application/json'
                 })
             });
-            console.log(response);
             let json = await response.json();
-            console.log("success", JSON.stringify(json));
+            // console.log("success", JSON.stringify(json));
             logout(json, response.ok);
             return json;
         } catch (error) {

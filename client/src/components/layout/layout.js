@@ -8,7 +8,6 @@ import LanguageBtn from '../LanguageBtn';
 export default function Layout() {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector((state) => state.autorization.isLoggedIn);
-    const email = useSelector((state) => state.autorization.userEmail);
     const { t } = useTranslation();
     const addLoginDataToStore = () => {
         dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
@@ -24,7 +23,6 @@ export default function Layout() {
 
             addLoginDataToStore();
     }
-    console.log("render layout")
 
     function renderButtons(isLoggedIn){
         if(isLoggedIn){
