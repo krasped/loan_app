@@ -25,16 +25,14 @@ app.use(
     "/users",
     passport.authenticate("bearer", {
     session: false,
-    // failureRedirect: "/auth/failure",//fro development
-    failureRedirect: "/login",// for deploy
+    failureRedirect: "/auth/failure",
     }),
     users
 );
 app.use(
     "/loans",
     passport.authenticate("bearer", {
-        // failureRedirect: "/auth/failure",
-        failureRedirect: "/login",
+        failureRedirect: "/auth/failure",
         session: false,
     }),
     loans,
@@ -42,8 +40,7 @@ app.use(
 app.use(
     "/add_loan",
     passport.authenticate("bearer", {
-        // failureRedirect: "/auth/failure",
-        failureRedirect: "/login",
+        failureRedirect: "/auth/failure",
         session: false,
     }),
     add_loan,
@@ -54,6 +51,5 @@ app.use(express.static("client/build"));
 app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "./client", "build", "index.html"));
 });
-
 
 module.exports = app;
