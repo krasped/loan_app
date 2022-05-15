@@ -336,7 +336,7 @@ const LoginPage = () => {
                         color="white"
                         style={{ textDecoration: "none", color: "blue" }}
                     >
-                        {t("loginPage.login")}
+                        {t("loginPage.logIn")}
                     </Link>
                     {/* добавить функционал для перенаправления при логине и ошибках */}
                 </Button>
