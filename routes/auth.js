@@ -114,6 +114,5 @@ router.post(
         }
 })
 
-// router.get("/", getAuthor);
 
 module.exports = router;

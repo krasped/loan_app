@@ -228,7 +228,6 @@ const LoginPage = () => {
                 <DialogTitle>{t("loginPage.feedInformation")}</DialogTitle>
                 <DialogContent>
                     <TextField
-                    
                         onChange={handleChangeRegistrationLogin}
                         value={registrationLogin}
                         autoFocus
@@ -338,7 +337,6 @@ const LoginPage = () => {
                     >
                         {t("loginPage.logIn")}
                     </Link>
-                    {/* добавить функционал для перенаправления при логине и ошибках */}
                 </Button>
             </Container>
         </>
