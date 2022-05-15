@@ -25,14 +25,16 @@ app.use(
     "/users",
     passport.authenticate("bearer", {
     session: false,
-    failureRedirect: "/auth/failure",
+    // failureRedirect: "/auth/failure",//fro development
+    failureRedirect: "/login",// for deploy
     }),
     users
 );
 app.use(
     "/loans",
     passport.authenticate("bearer", {
-        failureRedirect: "/auth/failure",
+        // failureRedirect: "/auth/failure",
+        failureRedirect: "/login",
         session: false,
     }),
     loans,
@@ -40,7 +42,8 @@ app.use(
 app.use(
     "/add_loan",
     passport.authenticate("bearer", {
-        failureRedirect: "/auth/failure",
+        // failureRedirect: "/auth/failure",
+        failureRedirect: "/login",
         session: false,
     }),
     add_loan,
