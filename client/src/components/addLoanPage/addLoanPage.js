@@ -8,8 +8,9 @@ import {
     Box,
     Button,
     Autocomplete,
-    styled,
+    styled
 } from "@mui/material";
+import NewUser from './newUser'
 import GotService from "../server";
 import { useSnackbar } from "notistack";
 import { useTranslation } from 'react-i18next';
@@ -124,10 +125,6 @@ export default function LoansPage() {
         });
         return ok;
     };
-    const checkFormFielsd = (loans) => {
-        let isOk = true;
-        return isOk;
-    };
 
     const handleClickSendForm = async () => {
         const { event, loans, other } = getAllParanetrsFromPage();
@@ -218,11 +215,7 @@ export default function LoansPage() {
         let result = await got.postResource("add_loan/addGhostUsers", data);
         return result;
     };
-    /**
-     *
-     * @param {*} data
-     * @returns promice promice from db request
-     */
+    
     const sendComplitedLoansToDB = async (data) => {
         let result = await got.postResource("add_loan/add", data);
         return result;
@@ -256,6 +249,7 @@ export default function LoansPage() {
     const separateSumForUsers = (loans) => {
         let newLoans = loans.slice();
         let bank = sumRowOfColulmn(newLoans, "howMach"); //банк должен быть больше либо равен 0, если меньше то придется у создателя вычитать
+        // отнимает у создателя
         newLoans.push({
             login: localStorage.getItem("login"),
             howMach: bank < 0 ? -bank : 0,
@@ -273,6 +267,7 @@ export default function LoansPage() {
             user.reason = sumRowOfColulmn(arrByLogins, "reason");
             return user;
         });
+        // банк делется на всех
         let sumForEachUser = Math.floor(bank / separatedLoans.length);
 
         let newSeparatedLoans = separatedLoans.map((item) => {
@@ -323,53 +318,13 @@ export default function LoansPage() {
         setEvent("");
         setOther("");
     };
-
+//render new user
     const renderUsersInputs = () => {
         const tabl = loans.map((row) => (
-            <Box
-                key={row.id}
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    "& > :not(style)": { m: 1 },
-                }}
-            >
-                <TextField
-                    id="demo-helper-text-misaligned-no-helper"
-                    onChange={(e) =>
-                        handleChangeUsersArr(row.id, "login", e.target.value)
-                    }
-                    label={t("addLoanPage.users") + " *"}
-                    value={row.login}
-                    disabled
-                />
-                <TextField
-                    id="demo-helper-text-misaligned-no-helper"
-                    type="number"
-                    onChange={(e) =>
-                        handleChangeUsersArr(
-                            row.id,
-                            "howMach",
-                            e.target.valueAsNumber,
-                        )
-                    }
-                    label={t("addLoanPage.howMach")}
-                />
-                <TextField
-                    id="demo-helper-text-misaligned-no-helper"
-                    onChange={(e) =>
-                        handleChangeUsersArr(
-                            row.id,
-                            "reason",
-                            e.target.value + " ",
-                        )
-                    }
-                    label={t("addLoanPage.details") + " *"}
-                />
-                <Button variant="outlined" onClick={() => deleteInput(row.id)}>
-                    {t("addLoanPage.delete")}
-                </Button>
+            <Box key={row.id}>
+                <NewUser user={row} changeUser={handleChangeUsersArr} deleteUser={deleteInput}/>
             </Box>
+            
         ));
         setTable(tabl);
     };
@@ -384,6 +339,13 @@ export default function LoansPage() {
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
                     label={t("addLoanPage.event")}
+                    margin="normal"
+                    onChange={handleChangeEvent}
+                    value={event}
+                />
+                <TextField
+                    id="demo-helper-text-misaligned-no-helper"
+                    label={'общая сумма'}
                     margin="normal"
                     onChange={handleChangeEvent}
                     value={event}
@@ -406,7 +368,7 @@ export default function LoansPage() {
                         variant="outlined"
                         onClick={() => addOtherUser(newUser)}
                     >
-                        {t("addLoanPage.addNewUser")}
+                        {/* {t("addLoanPage.addNewUser")} */ 'добавить пользователя к рассчету'}
                     </Button>
                 </Stack>
 
