@@ -17,7 +17,7 @@ export default function NewUser(props) {
         loan = 0,
         sumAmount = 0,
         details = "",
-        result = 0,
+        howMach = 0,
         isPay = false,
     } = user;
     const { t } = useTranslation();
@@ -40,7 +40,7 @@ export default function NewUser(props) {
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
-                onChange={(e) => changeUser(id, "pay", e.target.valueAsNumber)}
+                onChange={(e) => changeUser(id, "pay", e.target.value)}
                 vlaue={pay}
                 label={
                     "внес сумму"
@@ -50,7 +50,7 @@ export default function NewUser(props) {
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
-                onChange={(e) => changeUser(id, "loan", e.target.valueAsNumber)}
+                onChange={(e) => changeUser(id, "loan", e.target.value)}
                 vlaue={loan}
                 label={
                     "потратил на себя"
@@ -61,7 +61,7 @@ export default function NewUser(props) {
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
                 onChange={(e) =>
-                    changeUser(id, "sumAmount", e.target.valueAsNumber)
+                    changeUser(id, "sumAmount", e.target.value)
                 }
                 vlaue={sumAmount}
                 label={
@@ -80,7 +80,7 @@ export default function NewUser(props) {
 
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
-                vlaue={result}
+                vlaue={howMach}
                 label={"рассчет"}
                 disabled
             />
