@@ -12,8 +12,8 @@ import {
 } from "@mui/material";
 import NewUser from "./NewUser";
 import GotService from "../server";
-import Validation from "./validation";
-import CalcTotalForEachUser from "./calcTotalFunction";
+import Validation from "./validation.js";
+import CalcTotalForEachUser from "./calcTotalFunction.js";
 import { useSnackbar } from "notistack";
 import { useTranslation } from "react-i18next";
 
@@ -160,29 +160,34 @@ export default function LoansPage() {
     // };
     const handleClickSendForm = async () => {
         const { event, loans, other, totalSum } = getAllParanetrsFromPage();
-        if (Validation(loans, totalSum)) {
-            let sendObj = changeLoansBeforeSending(
-                event,
-                loans,
-                other,
-                totalSum,
-            );
-            console.log(sendObj);
-            try {
-                let resultSendGhost = await sendGhostUsersToDB(
-                    returnArrOfGhost(loans, allUsersArr),
-                );
-                let result = await sendComplitedLoansToDB(sendObj);
-                console.log(result, resultSendGhost);
-                enqueueSnackbar(t("addLoanPage.loansAdded"), {
-                    variant: "success",
-                });
-            } catch (e) {
-                enqueueSnackbar(`${t("addLoanPage.somethingError")} ${e}`, {
-                    variant: "error",
-                });
-            }
-        }
+        let {isOk, message} = Validation(loans, totalSum);
+        if (isOk){
+            console.log('устраивает');
+        } else console.log(message);
+
+        // if (Validation(loans, totalSum)) {
+        //     let sendObj = changeLoansBeforeSending(
+        //         event,
+        //         loans,
+        //         other,
+        //         totalSum,
+        //     );
+        //     console.log(sendObj);
+        //     try {
+        //         let resultSendGhost = await sendGhostUsersToDB(
+        //             returnArrOfGhost(loans, allUsersArr),
+        //         );
+        //         let result = await sendComplitedLoansToDB(sendObj);
+        //         console.log(result, resultSendGhost);
+        //         enqueueSnackbar(t("addLoanPage.loansAdded"), {
+        //             variant: "success",
+        //         });
+        //     } catch (e) {
+        //         enqueueSnackbar(`${t("addLoanPage.somethingError")} ${e}`, {
+        //             variant: "error",
+        //         });
+        //     }
+        // }
 
         //далее отправляем заемы, выделяем госты функция естьуже, отправляем госты
         // handleClearForm();

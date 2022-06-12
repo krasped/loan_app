@@ -34,7 +34,7 @@ export default function calcTotalForEachUser(loans, totalSum, cb) {
     let newLoans;
 
     console.log(loans, totalSum);
-    if (totalSum && totalSum !== "") {
+    if (totalSum && totalSum !== "" && totalSum!== '0') {
         newLoans = calcWithTotalSum(loanArr, totalSum);
     } else {
         newLoans = calcWithoutTotalSum(loanArr);
