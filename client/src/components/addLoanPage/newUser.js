@@ -10,18 +10,17 @@ import { useTranslation } from "react-i18next";
 
 export default function NewUser(props) {
     const { user, changeUser, deleteUser } = props;
-    const {
+    let {
         id,
         login,
         pay = 0,
         loan = 0,
         sumAmount = 0,
-        details = "",
-        howMach = 0,
+        reason = "",
+        howMach,
         isPay = false,
     } = user;
     const { t } = useTranslation();
-    console.log(user);
     return (
         <Box
             key={id}
@@ -41,7 +40,7 @@ export default function NewUser(props) {
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
                 onChange={(e) => changeUser(id, "pay", e.target.value)}
-                vlaue={pay}
+                value={pay}
                 label={
                     "внес сумму"
                     // t("addLoanPage.howMach")
@@ -51,7 +50,7 @@ export default function NewUser(props) {
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
                 onChange={(e) => changeUser(id, "loan", e.target.value)}
-                vlaue={loan}
+                value={loan}
                 label={
                     "потратил на себя"
                     // t("addLoanPage.howMach")
@@ -60,10 +59,8 @@ export default function NewUser(props) {
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
-                onChange={(e) =>
-                    changeUser(id, "sumAmount", e.target.value)
-                }
-                vlaue={sumAmount}
+                onChange={(e) => changeUser(id, "sumAmount", e.target.value)}
+                value={sumAmount}
                 label={
                     "всего должен"
                     // t("addLoanPage.howMach")
@@ -71,16 +68,14 @@ export default function NewUser(props) {
             />
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
-                onChange={(e) => changeUser(id, "reason", e.target.value + " ")}
-                vlaue={details}
+                onChange={(e) => changeUser(id, "reason", e.target.value)}
+                value={reason}
                 label={t("addLoanPage.details") + " *"}
             />
 
-            
-
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
-                vlaue={howMach}
+                value={howMach}
                 label={"рассчет"}
                 disabled
             />
@@ -88,15 +83,19 @@ export default function NewUser(props) {
                 control={
                     <Checkbox
                         checked={isPay}
-                        onChange={(e) => changeUser(id, "isPay", e.target.checked)}
-                        inputProps={{ 'aria-label': 'controlled' }}
+                        onChange={(e) =>
+                            changeUser(id, "isPay", e.target.checked)
+                        }
+                        inputProps={{ "aria-label": "controlled" }}
                     />
                 }
                 label="оплатил остаток"
             />
-            <Button variant="outlined" onClick={() => deleteUser(id)}>
-                {t("addLoanPage.delete")}
-            </Button>
+            {localStorage.getItem("login") === login ? null : (
+                <Button variant="outlined" onClick={() => deleteUser(id)}>
+                    {t("addLoanPage.delete")}
+                </Button>
+            )}
         </Box>
     );
 }
