@@ -1,4 +1,5 @@
-import { useTranslation } from "react-i18next";
+
+// import { useTranslation } from "react-i18next";
 
 
 const sumRowOfColulmn = (arr, nameOfColumn, conditionName) => {
@@ -22,7 +23,7 @@ const sumRowOfColulmn = (arr, nameOfColumn, conditionName) => {
 };
 
 export default function Validation(loans, totalSum) {
-    const { t } = useTranslation();
+    // const { t } = useTranslation();
     let result = { isOk: true, message: "" };
     const setResult = (isOk, message) => {
         result = { isOk, message };
@@ -32,28 +33,21 @@ export default function Validation(loans, totalSum) {
     let totalPay = sumRowOfColulmn(loans, "pay");
     //минимум 2 заемщика
     if(loans.length < 2){
-        setResult(false, "минимум 2 пользователя")
+        setResult(false, "validation.twoUsers")
     } 
     //есть общая сумма
     if (totalSum && totalSum !== "" && totalSum !== "0") {
         if(+totalTotalAmount > +totalSum){
             setResult(
                   false,
-                  "общая сумма не может быть меньше суммы затрат и долгов",
+                  "validation.totalMoreSumLoans",
               )
         }
-        if(totalPay > totalSum){
-                setResult(
-                  false,
-                  "общая сумма не может быть меньше суммы внесенных денег",
-              )
-        }
-        
            
         if(totalPay > totalSum){
             setResult(
                   false,
-                  "общая сумма не может быть меньше суммы внесенных денег",
+                  "validation.totalMorePay",
               )
         }
             
@@ -69,15 +63,15 @@ export default function Validation(loans, totalSum) {
             if(+item.loan > +item.sumAmount){
                 setResult(
                   false,
-                  "потратил на себя не может быть больше всего должен",
+                  "validation.totalMoreLoan",
                 )
             }
         }
-            
-            if(!item.details && item.details !== ''){
+            console.log(item, item.reason)
+            if((!item.reason) || (item.reason == '')){
                 setResult(
                 false,
-                "должно быть заполнено поле детали",
+                "validation.shouldDetails",
                 )
             }
         })

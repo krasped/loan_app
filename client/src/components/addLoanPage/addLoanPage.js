@@ -97,7 +97,7 @@ export default function LoansPage() {
             pay: 0,
             loan: 0,
             sumAmount: 0,
-            details: "",
+            reason: "",
             howMach: 0,
             isPay: true,
         };
@@ -114,7 +114,7 @@ export default function LoansPage() {
                 pay: 0,
                 loan: 0,
                 sumAmount: 0,
-                details: "",
+                reason: "",
                 howMach: 0,
                 isPay: false,
             };
@@ -163,7 +163,11 @@ export default function LoansPage() {
         let {isOk, message} = Validation(loans, totalSum);
         if (isOk){
             console.log('устраивает');
-        } else console.log(message);
+        } else {
+            enqueueSnackbar(t(message), {
+                variant: "warning",
+            });
+        };
 
         // if (Validation(loans, totalSum)) {
         //     let sendObj = changeLoansBeforeSending(
@@ -413,7 +417,7 @@ export default function LoansPage() {
                 />
                 <TextField
                     id="demo-helper-text-misaligned-no-helper"
-                    label={"общая сумма"}
+                    label={t("addLoanPage.totalAmount")}
                     margin="normal"
                     type="number"
                     onChange={handleChangeTotalSum}
@@ -441,7 +445,7 @@ export default function LoansPage() {
                         onClick={() => addOtherUser(newUser)}
                     >
                         {
-                            /* {t("addLoanPage.addNewUser")} */ "добавить пользователя к рассчету"
+                            t("addLoanPage.addNewUser")
                         }
                     </Button>
                 </Stack>

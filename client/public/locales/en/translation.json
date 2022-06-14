@@ -15,10 +15,26 @@
     "howMach": "how mach",
     "delete": "delete",
     "selectUserlogin": "select the user's login",
-    "addNewUser": "add a new user",
+    "addNewUser": "add a new user to payroll",
     "create": "create",
     "clearForm": "clear form",
-    "fieldsWith*Should": "* fields marked with an asterisk required to be filled in"
+    "fieldsWith*Should": "* fields marked with an asterisk required to be filled in",
+    "totalAmount":"total amount"
+
+  },
+  "newUser": {
+    "amountDeposited": "amount deposit",
+    "spentOnHimself": "spent on himself",
+    "totalAmount": "total amount",
+    "calculaded": "calculated...",
+    "paidRest": "paid the rest"
+  },
+  "validation": {
+    "twoUsers": "need minimum 2 users",
+    "totalMoreSumLoans": "totalSum should be more then sum of loans and totalAmount",
+    "totalMorePay": "totalSum should be more then sum of all pay",
+    "totalMoreLoan": "loan should be less then totalAmount",
+    "shouldDetails": "all fields Details should be filled in"
   },
   "layout": {
     "contacts": "users",

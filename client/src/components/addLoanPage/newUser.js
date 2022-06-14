@@ -41,30 +41,21 @@ export default function NewUser(props) {
                 type="number"
                 onChange={(e) => changeUser(id, "pay", e.target.value)}
                 value={pay}
-                label={
-                    "внес сумму"
-                    // t("addLoanPage.howMach")
-                }
+                label={t("newUser.amountDeposited")}
             />
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
                 onChange={(e) => changeUser(id, "loan", e.target.value)}
                 value={loan}
-                label={
-                    "потратил на себя"
-                    // t("addLoanPage.howMach")
-                }
+                label={t("newUser.spentOnHimself")}
             />
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
                 type="number"
                 onChange={(e) => changeUser(id, "sumAmount", e.target.value)}
                 value={sumAmount}
-                label={
-                    "всего должен"
-                    // t("addLoanPage.howMach")
-                }
+                label={t("newUser.totalAmount")}
             />
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
@@ -76,7 +67,7 @@ export default function NewUser(props) {
             <TextField
                 id="demo-helper-text-misaligned-no-helper"
                 value={howMach}
-                label={"рассчет"}
+                label={t("newUser.calculaded")}
                 disabled
             />
             <FormControlLabel
@@ -89,7 +80,7 @@ export default function NewUser(props) {
                         inputProps={{ "aria-label": "controlled" }}
                     />
                 }
-                label="оплатил остаток"
+                label={t("newUser.paidRest")}
             />
             {localStorage.getItem("login") === login ? null : (
                 <Button variant="outlined" onClick={() => deleteUser(id)}>
