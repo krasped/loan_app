@@ -11,7 +11,7 @@ function GotService() {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     this._apiBase = '';
-    this._apiBase = "http://localhost:5000/";// убрать при деплое
+    // this._apiBase = "http://localhost:5000/";// убрать при деплое
 
 
     const logout = (responce, resOk) => {
