@@ -50,15 +50,26 @@ export default function Validation(loans, totalSum) {
                   "validation.totalMorePay",
               )
         }
-            
-        console.log(1);
-    } else {
-        console.log(2);
+
+       
+    } 
+
+     //проверить чтобы поля how match , были не 0, иначе сказать недостаточно данных
+    
+    
+        
+    console.log(loans.find((item) => +item.howMach !==0))
+    if(!loans.find((item) => +item.howMach !==0)){
+        setResult(
+            false,
+            "validation.notEnoughData",
+        )
     }
+     
+            
+
 
     loans.forEach((item) => {
-        console.log(4)
-        console.log((+item.sumAmount)!==0)
         if((+item.sumAmount)!==0){
             if(+item.loan > +item.sumAmount){
                 setResult(
@@ -67,7 +78,6 @@ export default function Validation(loans, totalSum) {
                 )
             }
         }
-            console.log(item, item.reason)
             if((!item.reason) || (item.reason == '')){
                 setResult(
                 false,
@@ -75,6 +85,5 @@ export default function Validation(loans, totalSum) {
                 )
             }
         })
-    console.log(3)
     return result;
 }

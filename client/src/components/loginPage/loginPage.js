@@ -153,6 +153,7 @@ const LoginPage = () => {
             }
  
         } else {
+            console.log(1)
             enqueueSnackbar(t("loginPage.invalid"), {
                 variant: "warning",
             });
