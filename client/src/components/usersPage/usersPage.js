@@ -50,13 +50,8 @@ export default function UsersPage() {
 
     const curentUserId = localStorage.getItem("userId");
 
-    const isContact = (id) => {
-        let isOk = false;
-        friends.forEach((element) => {
-            if (element._id === id) {
-                isOk = true;
-            }
-        });
+    const isContact = (id) => { 
+        let isOk = friends.find((element) => element._id === id);
         return isOk;
     };
 
@@ -108,6 +103,7 @@ export default function UsersPage() {
                 setLoansByUserData(transformDateToDaysAgo(dbPromise[res]));
                 break;
             case "contacts":
+                console.log(dbPromise)
                 setFriends(dbPromise["users"][res]);
                 break;
             case "users":
@@ -265,6 +261,11 @@ export default function UsersPage() {
         )
     }
 
+    useEffect(() => {
+        updateDataFromDb("users/contacts", "contacts", {
+            _id: curentUserId,
+        });
+    },[])
     useEffect(() => {
         allOrFriends
             ? updateDataFromDb("users/all", "users")
