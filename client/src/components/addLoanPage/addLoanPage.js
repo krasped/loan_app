@@ -40,12 +40,23 @@ export default function LoansPage() {
     const [table, setTable] = useState(null);
     const [newUser, setNewUser] = useState("");
     const [allUsersArr, setAllUsersArr] = useState([]);
+    const [allUsersToAdd, setAllUsersToAdd] = useState([]);
     const [id, setId] = useState(1);
 
     const getAllUsers = async () => {
         const users = await got.getResource("users/all/login");
         setAllUsersArr(users.users);
     };
+
+    const filterUsersToAdd = () => {
+        let newArr = allUsersArr.filter((item) => {
+            let isAlreadyAdded = loans.find((loan) => {
+                return (loan.login === item.login)
+            })
+            return (!isAlreadyAdded);
+        })
+        setAllUsersToAdd(newArr)
+    }
 
     const handleChangeTotalSum = (e) => {
         setTotalSum(e.target.value);
@@ -106,24 +117,33 @@ export default function LoansPage() {
 
     const addOtherUser = () => {
         if (newUser) {
-            setId(id + 1);
-            const user = {
-                id,
-                login: newUser,
-                pay: 0,
-                loan: 0,
-                sumAmount: 0,
-                reason: "",
-                howMach: 0,
-                isPay: false,
-            };
-            setLoans([...loans, user]);
-            setNewUser("");
-            if (allUsersArr.map((x) => x.login).indexOf(user.login) === -1) {
-                enqueueSnackbar(t("addLoanPage.createLoginMessage"), {
+            //проверка есть ли пользователь в уже добавленных
+            
+            if(!loans.find(item => newUser===item.login)){
+                setId(id + 1);
+                const user = {
+                    id,
+                    login: newUser,
+                    pay: 0,
+                    loan: 0,
+                    sumAmount: 0,
+                    reason: "",
+                    howMach: 0,
+                    isPay: false,
+                };
+                setLoans([...loans, user]);
+                setNewUser("");
+                if (allUsersArr.map((x) => x.login).indexOf(user.login) === -1) {
+                    enqueueSnackbar(t("addLoanPage.createLoginMessage"), {
+                        variant: "warning",
+                    });
+                }
+            } else{
+                enqueueSnackbar(t("addLoanPage.userAlreadyAdded"), {
                     variant: "warning",
                 });
             }
+
         } else
             enqueueSnackbar(t("addLoanPage.newUserMessage"), {
                 variant: "warning",
@@ -317,6 +337,10 @@ export default function LoansPage() {
         CalcTotalForEachUser(loans, totalSum, renderUsersInputs);
         getAllUsers();
     }, [loans, totalSum]);
+    useEffect(() => {
+        filterUsersToAdd()
+        
+    }, [allUsersArr]);
     return (
         <>
             <Box>
@@ -340,7 +364,7 @@ export default function LoansPage() {
                     <Autocomplete
                         id="free-solo-demo"
                         freeSolo
-                        options={allUsersArr.map((option) => option["login"])}
+                        options={allUsersToAdd.map((option) => option["login"])}
                         sx={{ width: 300 }}
                         renderInput={(params) => (
                             <TextField

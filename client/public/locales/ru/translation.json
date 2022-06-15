@@ -19,7 +19,8 @@
     "create": "создать",
     "clearForm": "очистить форму",
     "fieldsWith*Should": "* Поля со звездочкой обязательны к заполнению",
-    "totalAmount":"общая сумма"
+    "totalAmount":"общая сумма",
+    "userAlreadyAdded": "такой пользователь уже добавлен"
   },
   "newUser": {
     "amountDeposited": "внес сумму",

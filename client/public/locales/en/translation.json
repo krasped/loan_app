@@ -19,8 +19,8 @@
     "create": "create",
     "clearForm": "clear form",
     "fieldsWith*Should": "* fields marked with an asterisk required to be filled in",
-    "totalAmount":"total amount"
-
+    "totalAmount":"total amount",
+    "userAlreadyAdded": "the user already added"
   },
   "newUser": {
     "amountDeposited": "amount deposit",
