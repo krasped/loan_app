@@ -87,7 +87,7 @@ router.post(
             if (!errors.isEmpty()) {
                 return res.status(400).json({ 
                     errors: errors.array(),
-                    message: 'некоректрые данные при логине'
+                    message: 'некоректные данные при логине'
                 });
               }
             //check unique

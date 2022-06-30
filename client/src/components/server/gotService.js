@@ -11,7 +11,7 @@ function GotService() {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     this._apiBase = '';
-    // this._apiBase = "http://localhost:5000/";// убрать при деплое
+    this._apiBase = "http://localhost:5000/";// убрать при деплое
 
 
     const logout = (responce, resOk) => {
@@ -19,6 +19,7 @@ function GotService() {
             localStorage.removeItem('token');
             localStorage.removeItem('isLogged');
             localStorage.removeItem('userId');
+            localStorage.removeItem('login');
             dispatch({ type: "AUTORIZATION_STATUS", payload: localStorage.getItem('isLogged') });
             dispatch({ type: "USER_ID", payload: localStorage.getItem('userId') });
             dispatch({ type: "USER_TOKEN", payload: localStorage.getItem('token') });

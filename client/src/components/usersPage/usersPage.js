@@ -350,23 +350,6 @@ export default function UsersPage() {
                         
                     </Table>
                 </TableContainer>
-
-                {/* <TableContainer component={Paper}>
-                    {t("usersPage.loansOfUser")}: {selectedLogin}
-                    <Table sx={{ minWidth: 200 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>{t("usersPage.login")}</TableCell>
-                                <TableCell align="center">{t("usersPage.howMach")}</TableCell>
-                                <TableCell align="center">
-                                    {t("usersPage.dateOfCreation")}
-                                </TableCell>
-                                <TableCell align="right">{t("usersPage.reason")}</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>{loansTable ? loansTable : null}</TableBody>
-                    </Table>
-                </TableContainer> */}
             </Stack>
         </>
     );
